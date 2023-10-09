@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "stockkeyword")
 @Getter
 @Setter
 @NoArgsConstructor
