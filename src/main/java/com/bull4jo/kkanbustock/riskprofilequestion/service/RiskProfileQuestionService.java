@@ -29,9 +29,8 @@ public class RiskProfileQuestionService {
 
         for (boolean surveyResponse : surveyResponses) {
             if (surveyResponse) {
-                throw new RuntimeException();
+                sum += 1;
             }
-            sum += 1;
         }
 
         if (sum >= 0 && sum <= 4) {
