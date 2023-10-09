@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/dictionary")
+@RequestMapping("/api")
 public class DictionaryController {
 
     private final DictionaryService dictionaryService;
@@ -20,12 +20,12 @@ public class DictionaryController {
         this.dictionaryService = dictionaryService;
     }
 
-    @GetMapping
+    @GetMapping("/v1/dictionary")
     public ResponseEntity<List<Dictionary>> getAllDictionaries() {
         return ResponseEntity.ok(dictionaryService.findAll());
     }
 
-    @GetMapping("/{dictionaryId}")
+    @GetMapping("/v1/dictionary/{dictionaryId}")
     public ResponseEntity<Dictionary> getDictionaryById(@PathVariable Long dictionaryId) {
         Optional<Dictionary> dictionary = dictionaryService.findById(dictionaryId);
         if (dictionary.isPresent()) {

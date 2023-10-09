@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "StockKeyword")
+@Table(name = "stockkeyword")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,7 +19,7 @@ public class Dictionary {
     @Column(nullable = false)
     private String word;
 
-    @Column(nullable = false, length = Integer.MAX_VALUE)  // TEXT 타입 대신에 사용될 수 있음. 필요에 따라 length 값을 조절하세요.
+    @Column(nullable = false, length = Integer.MAX_VALUE)
     private String explanation;
 
     public Dictionary(String word, String explanation) {
