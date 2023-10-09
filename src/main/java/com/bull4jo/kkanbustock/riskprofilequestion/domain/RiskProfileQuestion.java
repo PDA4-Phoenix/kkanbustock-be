@@ -12,7 +12,9 @@ public class RiskProfileQuestion {
     private Long id;
     @Column(length = 100, nullable = false)
     private String content;
-    @Column(nullable = false)
-    private int weight;
+    @Column(length = 100, nullable = false)
+    private String option1;
+    @Column(length = 100, nullable = false)
+    private String option2;
 
 }
