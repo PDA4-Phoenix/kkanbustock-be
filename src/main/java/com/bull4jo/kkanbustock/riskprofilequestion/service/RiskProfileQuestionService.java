@@ -5,8 +5,8 @@ import com.bull4jo.kkanbustock.riskprofilequestion.domain.InvestorType;
 import com.bull4jo.kkanbustock.riskprofilequestion.repository.RiskProfileQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class RiskProfileQuestionService {
     private final RiskProfileQuestionRepository riskProfileQuestionRepository;
 
+    @Transactional(readOnly = true)
     public List<RiskProfileQuestionResponse> findAll() {
         return riskProfileQuestionRepository
                 .findAll()
@@ -23,8 +24,16 @@ public class RiskProfileQuestionService {
                 .collect(Collectors.toList());
     }
 
-    public InvestorType analyzeQuestionResults(int[] surveyResponses) {
-        int sum = Arrays.stream(surveyResponses).sum();
+    public InvestorType analyzeQuestionResults(boolean[] surveyResponses) {
+        int sum = 0;
+
+        for (boolean surveyResponse : surveyResponses) {
+            if (surveyResponse) {
+                throw new RuntimeException();
+            }
+            sum += 1;
+        }
+
         if (sum >= 0 && sum <= 4) {
             return InvestorType.CONSERVATIVE;
         } else if (sum >= 5 && sum <= 7) {
