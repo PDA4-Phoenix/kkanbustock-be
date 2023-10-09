@@ -1,4 +1,4 @@
-package com.bull5jo.kkanbustock;
+package com.bull4jo.kkanbustock;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

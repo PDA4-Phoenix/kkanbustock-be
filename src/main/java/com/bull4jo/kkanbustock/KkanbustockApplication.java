@@ -1,4 +1,4 @@
-package com.bull5jo.kkanbustock;
+package com.bull4jo.kkanbustock;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
