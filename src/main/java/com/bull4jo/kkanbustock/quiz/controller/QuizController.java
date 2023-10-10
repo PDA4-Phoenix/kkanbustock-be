@@ -4,6 +4,7 @@ import com.bull4jo.kkanbustock.quiz.domain.dto.QuizRequest;
 import com.bull4jo.kkanbustock.quiz.domain.dto.QuizResponse;
 import com.bull4jo.kkanbustock.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,15 +17,15 @@ public class QuizController {
     private final QuizService quizService;
 
     @GetMapping("/v1/quizzes")
-    public Response<List<QuizResponse>> getQuizzes() {
-        return Response.of(quizService.getQuizzes());
+    public ResponseEntity<List<QuizResponse>> getQuizzes() {
+        return ResponseEntity.ok(quizService.getQuizzes());
     }
 
     @GetMapping("/v1/quizzes/{quizId}")
-    public Response<QuizResponse> getQuiz(
+    public ResponseEntity<QuizResponse> getQuiz(
             @PathVariable(value = "quizId") long id
     ) {
-        return Response.of(quizService.getQuiz(id));
+        return ResponseEntity.ok(quizService.getQuiz(id));
     }
 
     @PostMapping("/v1/quizzes")
