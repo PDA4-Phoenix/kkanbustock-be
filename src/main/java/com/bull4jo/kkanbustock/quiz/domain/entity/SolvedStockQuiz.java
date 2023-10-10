@@ -1,6 +1,7 @@
 package com.bull4jo.kkanbustock.quiz.domain.entity;
 
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,6 +32,7 @@ public class SolvedStockQuiz {
     @Column
     private Boolean isCorrect;
 
+    @Builder
     public SolvedStockQuiz(Member member, StockQuiz stockQuiz, Date solvedDate, Boolean isCorrect) {
         this.member = member;
         this.stockQuiz = stockQuiz;

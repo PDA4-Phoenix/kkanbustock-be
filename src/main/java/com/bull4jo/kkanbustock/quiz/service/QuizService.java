@@ -44,7 +44,13 @@ public class QuizService {
         StockQuiz stockQuiz = quizRepository.findById(stockQuizId).orElseThrow();
 
         // SolvedStockQuiz 엔티티 생성
-        SolvedStockQuiz solvedStockQuiz = new SolvedStockQuiz(member, stockQuiz, solveDate, isCorrect);
+        SolvedStockQuiz solvedStockQuiz = SolvedStockQuiz
+                .builder()
+                .member(member)
+                .stockQuiz(stockQuiz)
+                .solvedDate(solveDate)
+                .isCorrect(isCorrect)
+                .build();
 
         // SolvedStockQuiz 저장
         solvedQuizRepository.save(solvedStockQuiz);
