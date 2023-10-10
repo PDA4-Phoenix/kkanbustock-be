@@ -1,4 +1,4 @@
-package com.bull4jo.kkanbustock.quiz.domain.dto;
+package com.bull4jo.kkanbustock.quiz.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

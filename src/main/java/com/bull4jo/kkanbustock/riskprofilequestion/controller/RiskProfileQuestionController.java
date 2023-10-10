@@ -1,7 +1,7 @@
 package com.bull4jo.kkanbustock.riskprofilequestion.controller;
 
 import com.bull4jo.kkanbustock.riskprofilequestion.controller.dto.RiskProfileQuestionResponse;
-import com.bull4jo.kkanbustock.riskprofilequestion.domain.InvestorType;
+import com.bull4jo.kkanbustock.member.domain.entity.InvestorType;
 import com.bull4jo.kkanbustock.riskprofilequestion.service.RiskProfileQuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

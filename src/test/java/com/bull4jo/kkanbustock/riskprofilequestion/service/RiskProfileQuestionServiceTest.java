@@ -1,7 +1,7 @@
 package com.bull4jo.kkanbustock.riskprofilequestion.service;
 
 import com.bull4jo.kkanbustock.riskprofilequestion.controller.dto.RiskProfileQuestionResponse;
-import com.bull4jo.kkanbustock.riskprofilequestion.domain.InvestorType;
+import com.bull4jo.kkanbustock.member.domain.entity.InvestorType;
 import com.bull4jo.kkanbustock.riskprofilequestion.domain.RiskProfileQuestion;
 import com.bull4jo.kkanbustock.riskprofilequestion.repository.RiskProfileQuestionRepository;
 import org.junit.jupiter.api.Assertions;
