@@ -1,8 +1,7 @@
 package com.bull4jo.kkanbustock.quiz.controller;
 
-import com.bull4jo.kkanbustock.common.config.Response;
-import com.bull4jo.kkanbustock.quiz.domain.request.QuizRequest;
-import com.bull4jo.kkanbustock.quiz.domain.response.QuizResponse;
+import com.bull4jo.kkanbustock.quiz.domain.dto.QuizRequest;
+import com.bull4jo.kkanbustock.quiz.domain.dto.QuizResponse;
 import com.bull4jo.kkanbustock.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

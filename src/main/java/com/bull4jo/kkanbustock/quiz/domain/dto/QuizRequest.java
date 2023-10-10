@@ -1,5 +1,6 @@
-package com.bull4jo.kkanbustock.quiz.domain.request;
+package com.bull4jo.kkanbustock.quiz.domain.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

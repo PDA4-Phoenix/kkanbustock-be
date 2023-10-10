@@ -1,11 +1,8 @@
-package com.bull4jo.kkanbustock.quiz.domain.response;
+package com.bull4jo.kkanbustock.quiz.domain.dto;
 
-import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.quiz.domain.entity.StockQuiz;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
