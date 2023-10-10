@@ -3,7 +3,6 @@ package com.bull4jo.kkanbustock.dictionary.service;
 import com.bull4jo.kkanbustock.dictionary.domain.entity.Dictionary;
 import com.bull4jo.kkanbustock.dictionary.repository.DictionaryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,5 +24,4 @@ public class DictionaryService {
     public Optional<Dictionary> findById(Long id) {
         return dictionaryRepository.findById(id);
     }
-
 }
