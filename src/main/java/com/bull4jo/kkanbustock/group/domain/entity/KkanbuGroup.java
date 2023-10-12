@@ -1,5 +1,6 @@
 package com.bull4jo.kkanbustock.group.domain.entity;
 
+import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,14 +13,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class KkanbuGroup {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long groupId;
+    @OneToOne
+    private Member hostId;
 
-    @Column
-    private Long hostId;
-
-    @Column
-    private Long guestId;
+    @Id
+    @OneToOne
+    private Member guestId;
 
     @Column
     private float profitRate;
