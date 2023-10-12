@@ -5,6 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class GroupCodeGenerationRequest {
-    private final String name;
+public class InviteCodeRetrievalRequest {
+    private final String inviteCode;
 }

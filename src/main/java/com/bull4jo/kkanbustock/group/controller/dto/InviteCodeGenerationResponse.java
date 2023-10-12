@@ -1,10 +1,12 @@
 package com.bull4jo.kkanbustock.group.controller.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class GroupCodeRetrievalRequest {
+@Builder
+public class InviteCodeGenerationResponse {
     private final String inviteCode;
 }
