@@ -3,7 +3,9 @@ package com.bull4jo.kkanbustock.group.service;
 import com.bull4jo.kkanbustock.group.controller.dto.GroupNameRequest;
 import com.bull4jo.kkanbustock.group.controller.dto.InviteCodeGenerationResponse;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroup;
+import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroupPK;
 import com.bull4jo.kkanbustock.group.repository.GroupRepository;
+import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import java.util.Random;
 public class GroupService {
 
     private final GroupRepository groupRepository;
+    private final PortfolioRepository portfolioRepository;
 
     public String setGroupName(GroupNameRequest groupNameRequest) {
         String name = groupNameRequest.getName();
@@ -67,5 +70,16 @@ public class GroupService {
     private boolean isInviteCodeExists(String inviteCode) {
         Optional<KkanbuGroup> existingInviteCode = groupRepository.findByInviteCode(inviteCode);
         return existingInviteCode.isPresent(); // 값이 있다면 true
+    }
+
+    public float getGroupProfitRate(KkanbuGroupPK kkanbuGroupPK) {
+        Float hostTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getHostId());
+        Float hostTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getHostId());
+
+        Float guestTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getGuestId());
+        Float guestTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getGuestId());
+
+        float groupProfitRate = ((hostTotalEquities + guestTotalEquities) / (hostTotalPurchaseAmount + guestTotalPurchaseAmount) - 1) * 100;
+        return groupProfitRate;
     }
 }
