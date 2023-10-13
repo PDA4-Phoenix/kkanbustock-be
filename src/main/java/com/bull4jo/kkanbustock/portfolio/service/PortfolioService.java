@@ -44,18 +44,14 @@ public class PortfolioService {
         // 포폴 없을경우 예외처리 필요
         List<Portfolio> portfolios = portfolioRepository.findPortfoliosByMemberId(memberId);
 
-        float portfolioDenom = 0;
-        float investedAsset = 0;
+        float equitiesSum = 0;
+        float purchaseAmountSum = 0;
         for (Portfolio portfolio : portfolios) {
-            float purchasePrice = portfolio.getPurchasePrice();
-            int stockQuantity = portfolio.getQuantity();
-            float stockProfitRate = portfolio.getProfitRate();
-
-            investedAsset += purchasePrice * stockQuantity;
-            portfolioDenom += stockProfitRate * purchasePrice * stockQuantity;
+            equitiesSum += portfolio.getEquitiesValue();
+            purchaseAmountSum += portfolio.getPurchaseAmount();
         }
 
-        float profitRate = portfolioDenom / investedAsset;
+        float profitRate = equitiesSum / purchaseAmountSum;
         return profitRate;
     }
 
