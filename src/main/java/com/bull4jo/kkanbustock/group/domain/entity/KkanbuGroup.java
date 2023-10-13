@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,16 +13,15 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class KkanbuGroup {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @EmbeddedId
+    private KkanbuGroupPK kkanbuGroupPK;
 
     @OneToOne
-    @JoinColumn(name = "host_id")
+    @MapsId("hostId")
     private Member host;
 
     @OneToOne
-    @JoinColumn(name = "guest_id")
+    @MapsId("guestId")
     private Member guest;
 
     @Column
@@ -39,8 +37,9 @@ public class KkanbuGroup {
     private LocalDateTime createdDate;
 
     @Builder
-    public KkanbuGroup(Long id, Member host, Member guest, float profitRate, String inviteCode, String name, LocalDateTime createdDate) {
-        this.id = id;
+
+    public KkanbuGroup(KkanbuGroupPK kkanbuGroupPK, Member host, Member guest, float profitRate, String inviteCode, String name, LocalDateTime createdDate) {
+        this.kkanbuGroupPK = kkanbuGroupPK;
         this.host = host;
         this.guest = guest;
         this.profitRate = profitRate;
