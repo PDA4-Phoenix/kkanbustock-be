@@ -31,7 +31,8 @@ public class PortfolioController {
     }
     @GetMapping("/v1/pptest")
     public void test() {
-        List<Portfolio> byMemberId = portfolioService.findByMemberId(1L);
+//        List<Portfolio> byMemberId = portfolioService.findByMemberId(1L);
+        String s = portfolioService.addPortfolio("1", "000050", 8000f, 1);
     }
 
 }

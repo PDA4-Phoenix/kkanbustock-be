@@ -1,7 +1,6 @@
 package com.bull4jo.kkanbustock.login.service;
 
 
-import com.bull4jo.kkanbustock.login.domain.entity.Login;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;

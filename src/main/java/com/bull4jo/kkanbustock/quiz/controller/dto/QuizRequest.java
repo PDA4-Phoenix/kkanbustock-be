@@ -9,7 +9,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Getter
 public class QuizRequest {
-    private final Long memberId;
+    private final String memberId;
     private final Long stockQuizId;
     private final Date solveDate;
     private final Boolean isCorrect;
