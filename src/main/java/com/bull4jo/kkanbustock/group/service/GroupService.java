@@ -16,15 +16,15 @@ public class GroupService {
 
     private final GroupRepository groupRepository;
 
-    public void setGroupName(GroupNameRequest groupNameRequest) {
+    public String setGroupName(GroupNameRequest groupNameRequest) {
         String name = groupNameRequest.getName();
+        Long hostId = groupNameRequest.getHostId();
 
-        KkanbuGroup kkanbuGroup = KkanbuGroup
-                .builder()
-                .name(name)
-                .build();
-
-        groupRepository.save(kkanbuGroup);
+        if (isGroupNameExists(name)) {
+            return "중복입니다."; // 그룹 이름이 중복일 경우
+        } else {
+            return "중복이 아닙니다."; // 그룹 이름이 중복이 아닌 경우
+        }
     }
 
     public InviteCodeGenerationResponse setInviteCode(String name) {
@@ -47,6 +47,11 @@ public class GroupService {
         return InviteCodeGenerationResponse.builder().inviteCode(inviteCode).build();
     }
 
+    private boolean isGroupNameExists(String name) {
+        Optional<KkanbuGroup> existingGroupName = groupRepository.findByName(name);
+        return existingGroupName.isPresent(); // 값이 있다면 true
+    }
+
     private String generateRandomCode() {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
         Random random = new Random();
@@ -60,8 +65,7 @@ public class GroupService {
     }
 
     private boolean isInviteCodeExists(String inviteCode) {
-        // 초대코드 중복 확인
-        Optional<KkanbuGroup> existingGroup = groupRepository.findByInviteCode(inviteCode);
-        return existingGroup.isPresent(); // 값이 있다면 true
+        Optional<KkanbuGroup> existingInviteCode = groupRepository.findByInviteCode(inviteCode);
+        return existingInviteCode.isPresent(); // 값이 있다면 true
     }
 }

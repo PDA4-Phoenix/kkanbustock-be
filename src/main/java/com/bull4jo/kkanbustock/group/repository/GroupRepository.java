@@ -8,5 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends JpaRepository<KkanbuGroup,Long> {
+    Optional<KkanbuGroup> findByName(String name);
     Optional<KkanbuGroup> findByInviteCode(String inviteCode);
+
 }
