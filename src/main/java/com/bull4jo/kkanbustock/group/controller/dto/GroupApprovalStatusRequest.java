@@ -1,12 +1,11 @@
 package com.bull4jo.kkanbustock.group.controller.dto;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
-@Builder
-public class JoinGroupResponse {
+@RequiredArgsConstructor
+public class GroupApprovalStatusRequest {
     private final String name;
+    private final String approvalStatus;
 }
