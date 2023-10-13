@@ -26,34 +26,34 @@ public class Portfolio {
     @MapsId("stockId") // db -> stock_srtn_cd
     private Stock stock;
 
-    // 매수가
+    // 개별 종목 매수가
     @Column
     private float purchasePrice;
 
-    // 매수 수량
+    // 개별 종목 매수 수량
     @Column
     private int quantity;
 
     /**
      * 파생 속성
      */
-    // 총 매수 금액 = 매수가 * 매수 수량
+    // 개별 종목 매수 금액 = 매수가 * 매수 수량
     @Column
     private float purchaseAmount;
 
-    // 평가 금액 = 매수 수량 * 종가
+    // 개별 종목 평가 금액 = 매수 수량 * 종가
     @Column
     private int equitiesValue;
 
-    // 수익률 = 평가 금액 / 총 매수 금액
+    // 개별 종목 수익률 = 평가 금액 / 총 매수 금액
     @Column
     private float profitRate;
 
     @Column
-    // 평가 손익 = 평가 금액 - 총 매수 금액
+    // 개별 종목 평가 손익 = 평가 금액 - 총 매수 금액
     private float gainsLosses;
 
-    // 파생 속성 연산
+    // 개별 종목 파생 속성 연산
     public void setDerivedAttributes() {
         this.purchaseAmount = purchasePrice * quantity;
         this.equitiesValue = quantity * stock.getClpr();
