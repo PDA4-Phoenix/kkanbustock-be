@@ -1,6 +1,7 @@
 package com.bull4jo.kkanbustock.member.domain.entity;
 
 import com.bull4jo.kkanbustock.quiz.domain.entity.SolvedStockQuiz;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,10 +15,10 @@ import java.util.List;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column
-    private String password;
+    private String email;
 
     @Column
     private String nickname;
@@ -28,9 +29,10 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<SolvedStockQuiz> solvedStockQuizzes;
 
-    public Member(Long id, String password, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes) {
+    @Builder
+    public Member(String id, String email, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes) {
         this.id = id;
-        this.password = password;
+        this.email = email;
         this.nickname = nickname;
         this.investorType = investorType;
         this.solvedStockQuizzes = solvedStockQuizzes;
