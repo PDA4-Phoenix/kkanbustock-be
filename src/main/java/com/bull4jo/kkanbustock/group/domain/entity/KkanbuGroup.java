@@ -16,11 +16,11 @@ public class KkanbuGroup {
     @EmbeddedId
     private KkanbuGroupPK kkanbuGroupPK;
 
-    @OneToOne
+    @ManyToOne
     @MapsId("hostId")
     private Member host;
 
-    @OneToOne
+    @ManyToOne
     @MapsId("guestId")
     private Member guest;
 
