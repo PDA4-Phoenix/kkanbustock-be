@@ -2,6 +2,7 @@ package com.bull4jo.kkanbustock.login.service;
 
 
 import com.bull4jo.kkanbustock.login.domain.entity.Login;
+import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -27,33 +28,24 @@ public class LoginService {
         String accessToken = getAccessToken(code, registrationId);
         JsonNode userResourceNode = getUserResource(accessToken, registrationId);
 
-        Login userResource = new Login();
-        log.info("userResource = {}", userResource);
-        switch (registrationId) {
-            case "google": {
-                userResource.setId(userResourceNode.get("id").asText());
-                userResource.setEmail(userResourceNode.get("email").asText());
-                userResource.setNickname(userResourceNode.get("name").asText());
-                break;
-            } case "kakao": {
-                userResource.setId(userResourceNode.get("id").asText());
-                userResource.setEmail(userResourceNode.get("kakao_account").get("email").asText());
-                userResource.setNickname(userResourceNode.get("kakao_account").get("profile").get("nickname").asText());
-                break;
-            } case "naver": {
-                userResource.setId(userResourceNode.get("response").get("id").asText());
-                userResource.setEmail(userResourceNode.get("response").get("email").asText());
-                userResource.setNickname(userResourceNode.get("response").get("nickname").asText());
-                break;
-            } default: {
-                throw new RuntimeException("UNSUPPORTED SOCIAL TYPE");
-            }
+        Member member = null;
+
+        if ("google".equals(registrationId)) {
+            member = Member.builder()
+                    .id(userResourceNode.get("id").asText())
+                    .email(userResourceNode.get("email").asText())
+                    .nickname(userResourceNode.get("name").asText())
+                    .build();
+        } else {
+            throw new RuntimeException("UNSUPPORTED SOCIAL TYPE");
         }
-        log.info("id = {}", userResource.getId());
-        log.info("email = {}", userResource.getEmail());
-        log.info("nickname {}", userResource.getNickname());
+
+        log.info("id = {}", member.getId());
+        log.info("email = {}", member.getEmail());
+        log.info("nickname = {}", member.getNickname());
         log.info("======================================================");
     }
+
 
     private String getAccessToken(String authorizationCode, String registrationId) {
         String clientId = env.getProperty("oauth2." + registrationId + ".client-id");
