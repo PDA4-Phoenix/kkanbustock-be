@@ -38,24 +38,27 @@ public class PortfolioService {
         // 멤버가 없을 경우 예외처리 필요
 
         // 포폴 없을경우 예외처리 필요
-        List<Portfolio> portfolios = portfolioRepository.findPortfoliosByMemberId(memberId);
-
-        float equitiesSum = 0;
-        float purchaseAmountSum = 0;
-        for (Portfolio portfolio : portfolios) {
-            equitiesSum += portfolio.getEquitiesValue();
-            purchaseAmountSum += portfolio.getPurchaseAmount();
-        }
-
+        float equitiesSum = portfolioRepository.calculateTotalEquitiesValueByMemberId(memberId);
+        float purchaseAmountSum = portfolioRepository.calculateTotalPurchaseAmountByMemberId(memberId);
         float profitRate = equitiesSum / purchaseAmountSum;
+
         return profitRate;
+    }
+
+    @Transactional(readOnly = true)
+    public float getTotalPurchaseAmountByMemberId(final String memberId) {
+        return portfolioRepository.calculateTotalPurchaseAmountByMemberId(memberId);
+    }
+
+    @Transactional(readOnly = true)
+    public float calculateTotalEquitiesValueByMemberId(final String memberId) {
+        return portfolioRepository.calculateTotalEquitiesValueByMemberId(memberId);
     }
 
     @Transactional
     public String addPortfolio(final String memberId, final String stockId, final float purchasePrice, final int quantity) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         Stock stock = stockRepository.findById(stockId).orElseThrow();
-
 
         Portfolio portfolio = Portfolio.builder()
                 .portfolioPK(
