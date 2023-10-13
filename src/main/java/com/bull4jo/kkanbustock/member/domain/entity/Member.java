@@ -1,11 +1,13 @@
 package com.bull4jo.kkanbustock.member.domain.entity;
 
+import com.bull4jo.kkanbustock.group.domain.entity.GroupApplication;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroup;
 import com.bull4jo.kkanbustock.quiz.domain.entity.SolvedStockQuiz;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.swing.*;
 import java.util.List;
 
 @Entity
@@ -17,10 +19,13 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(nullable = false)
     private String nickname;
 
     @Column
@@ -29,15 +34,20 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<SolvedStockQuiz> solvedStockQuizzes;
 
-    @OneToMany(mappedBy = "member")
-    private List<KkanbuGroup> kkanbuGroups;
+    @OneToMany(mappedBy = "host")
+    private List<KkanbuGroup> hostKkanbuGroups;
 
-    public Member(Long id, String password, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes, List<KkanbuGroup> kkanbuGroups) {
+    @OneToMany(mappedBy = "guest")
+    private List<KkanbuGroup> guestKkanbuGroups;
+
+    public Member(Long id, String email, String password, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes, List<KkanbuGroup> hostKkanbuGroups, List<KkanbuGroup> guestKkanbuGroups) {
         this.id = id;
+        this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.investorType = investorType;
         this.solvedStockQuizzes = solvedStockQuizzes;
-        this.kkanbuGroups = kkanbuGroups;
+        this.hostKkanbuGroups = hostKkanbuGroups;
+        this.guestKkanbuGroups = guestKkanbuGroups;
     }
 }
