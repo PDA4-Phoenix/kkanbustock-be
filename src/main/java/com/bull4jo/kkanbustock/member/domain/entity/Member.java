@@ -1,5 +1,6 @@
 package com.bull4jo.kkanbustock.member.domain.entity;
 
+import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroup;
 import com.bull4jo.kkanbustock.quiz.domain.entity.SolvedStockQuiz;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,12 +29,15 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<SolvedStockQuiz> solvedStockQuizzes;
 
-    @Builder
-    public Member(String id, String email, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes) {
+    @OneToMany(mappedBy = "member")
+    private List<KkanbuGroup> kkanbuGroups;
+
+    public Member(Long id, String password, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes, List<KkanbuGroup> kkanbuGroups) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.investorType = investorType;
         this.solvedStockQuizzes = solvedStockQuizzes;
+        this.kkanbuGroups = kkanbuGroups;
     }
 }
