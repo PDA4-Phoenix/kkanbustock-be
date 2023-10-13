@@ -2,6 +2,7 @@ package com.bull4jo.kkanbustock.group.service;
 
 import com.bull4jo.kkanbustock.group.controller.dto.GroupNameRequest;
 import com.bull4jo.kkanbustock.group.controller.dto.InviteCodeGenerationResponse;
+import com.bull4jo.kkanbustock.group.controller.dto.InviteCodeRetrievalRequest;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroup;
 import com.bull4jo.kkanbustock.group.repository.GroupRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,20 @@ public class GroupService {
         // 초대코드 반환
         return InviteCodeGenerationResponse.builder().inviteCode(inviteCode).build();
     }
+
+    public String getGroupNameByInviteCode(InviteCodeRetrievalRequest inviteCodeRetrievalRequest) {
+        String inviteCode = inviteCodeRetrievalRequest.getInviteCode();
+
+        Optional<KkanbuGroup> groupOptional = groupRepository.findByInviteCode(inviteCode);
+
+        if (groupOptional.isPresent()) {
+            KkanbuGroup group = groupOptional.get();
+            return group.getName(); // 일치하는 그룹명 반환
+        } else {
+            return "일치하는 그룹을 찾을 수 없습니다."; // 일치하는 inviteCode를 찾을 수 없는 경우 메시지 반환
+        }
+    }
+
 
     private boolean isGroupNameExists(String name) {
         Optional<KkanbuGroup> existingGroupName = groupRepository.findByName(name);
