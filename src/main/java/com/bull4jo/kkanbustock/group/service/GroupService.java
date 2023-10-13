@@ -1,86 +1,93 @@
 package com.bull4jo.kkanbustock.group.service;
 
-import com.bull4jo.kkanbustock.group.controller.dto.GroupNameRequest;
-import com.bull4jo.kkanbustock.group.controller.dto.InviteCodeGenerationResponse;
-import com.bull4jo.kkanbustock.group.controller.dto.InviteCodeRetrievalRequest;
+import com.bull4jo.kkanbustock.group.controller.dto.GroupApplicationRequest;
+import com.bull4jo.kkanbustock.group.controller.dto.GroupApprovalStatusRequest;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroup;
 import com.bull4jo.kkanbustock.group.repository.GroupRepository;
+import com.bull4jo.kkanbustock.member.domain.entity.Member;
+import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 public class GroupService {
 
     private final GroupRepository groupRepository;
+    private final MemberRepository memberRepository;
 
-    public String setGroupName(GroupNameRequest groupNameRequest) {
-        String name = groupNameRequest.getName();
-        Long hostId = groupNameRequest.getHostId();
+    public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
+        Long hostId = groupApplicationRequest.getHostId();
+        String email = groupApplicationRequest.getEmail();
+        Long guestId = getGuestId(email); // null일 때 예외처리 필요
+        String name = generateGroupName();
+        // createdDate
 
-        if (isGroupNameExists(name)) {
-            return "중복입니다."; // 그룹 이름이 중복일 경우
-        } else {
-            return "중복이 아닙니다."; // 그룹 이름이 중복이 아닌 경우
-        }
-    }
+        Member host = memberRepository.findById(hostId).orElseThrow();
+        Member guest = memberRepository.findById(guestId).orElseThrow();
 
-    public InviteCodeGenerationResponse setInviteCode(String name) {
-        String inviteCode;
-
-        // 중복이 아닐 때까지 초대코드 생성 반복
-        do {
-            inviteCode = generateRandomCode();
-        } while (isInviteCodeExists(inviteCode));
-
-        // KkanbuGroup 객체 생성 및 저장
-        KkanbuGroup kkanbuGroup = KkanbuGroup.builder()
+        KkanbuGroup kkanbuGroup = KkanbuGroup
+                .builder()
+                .host(host)
+                .guest(guest)
                 .name(name)
-                .inviteCode(inviteCode)
                 .build();
 
         groupRepository.save(kkanbuGroup);
-
-        // 초대코드 반환
-        return InviteCodeGenerationResponse.builder().inviteCode(inviteCode).build();
     }
 
-    public String getGroupNameByInviteCode(InviteCodeRetrievalRequest inviteCodeRetrievalRequest) {
-        String inviteCode = inviteCodeRetrievalRequest.getInviteCode();
+    private void changeApprovalStatus(GroupApprovalStatusRequest groupApprovalStatusRequest) {
+        String name = groupApprovalStatusRequest.getName();
+        String approvalStatus = groupApprovalStatusRequest.getApprovalStatus();
 
-        Optional<KkanbuGroup> groupOptional = groupRepository.findByInviteCode(inviteCode);
+        KkanbuGroup kkanbuGroup = groupRepository.findByName(name).orElseThrow();
 
-        if (groupOptional.isPresent()) {
-            KkanbuGroup group = groupOptional.get();
-            return group.getName(); // 일치하는 그룹명 반환
+        if (Objects.equals(approvalStatus, "승인")) {
+            float profitRate = getProfitRate();
+            // name으로 찾은 그룹의 approvalStatus, profitRate를 설정하는 방법?
+            // 데이터의 무결성을 보장할 수 없는 이슈?
+            kkanbuGroup.setApprovalStatus(approvalStatus);
+            kkanbuGroup.setProfitRate(profitRate);
+
+            // 엔티티를 업데이트
+            groupRepository.save(kkanbuGroup);
         } else {
-            return "일치하는 그룹을 찾을 수 없습니다."; // 일치하는 inviteCode를 찾을 수 없는 경우 메시지 반환
+            // 거절 - 해당 그룹을 삭제하는 로직
+            groupRepository.delete(kkanbuGroup);
         }
     }
 
+    private String generateGroupName() {
+        // 그룹 이름을 만들어주는 로직
+        // 임시로 리턴
+        return "test";
+    }
+
+    private Long getGuestId(String email) {
+        Member member = memberRepository.findByEmail(email);
+        if (member != null) {
+            return member.getId();
+        }
+        return null;
+    }
+
+    private float getProfitRate() {
+        // 수익률을 계산하는 로직
+        // 임시로 리턴
+        return 100;
+    }
+
+//    private boolean isEmailExists(String email) {
+//        Optional<Member> existingEmail = Optional.ofNullable(memberRepository.findByEmail(email));
+//        return existingEmail.isPresent(); // 값이 있다면 true
+//    }
 
     private boolean isGroupNameExists(String name) {
         Optional<KkanbuGroup> existingGroupName = groupRepository.findByName(name);
         return existingGroupName.isPresent(); // 값이 있다면 true
-    }
-
-    private String generateRandomCode() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-        Random random = new Random();
-        StringBuilder code = new StringBuilder();
-
-        for (int i = 0; i < 5; i++) {
-            code.append(characters.charAt(random.nextInt(characters.length())));
-        }
-
-        return code.toString();
-    }
-
-    private boolean isInviteCodeExists(String inviteCode) {
-        Optional<KkanbuGroup> existingInviteCode = groupRepository.findByInviteCode(inviteCode);
-        return existingInviteCode.isPresent(); // 값이 있다면 true
     }
 }
