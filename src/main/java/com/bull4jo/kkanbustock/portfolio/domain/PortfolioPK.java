@@ -1,11 +1,16 @@
 package com.bull4jo.kkanbustock.portfolio.domain;
 
-import lombok.Data;
+import lombok.*;
 
+import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Data
+@Embeddable
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PortfolioPK implements Serializable {
-    private Long memberId;
+    private String memberId;
     private String stockId;
 }

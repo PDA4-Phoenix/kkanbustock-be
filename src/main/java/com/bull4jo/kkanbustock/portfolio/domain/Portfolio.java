@@ -1,25 +1,78 @@
 package com.bull4jo.kkanbustock.portfolio.domain;
 
+import com.bull4jo.kkanbustock.member.domain.entity.Member;
+import com.bull4jo.kkanbustock.stock.domain.Stock;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 
 @Entity
 @Getter
-@IdClass(PortfolioPK.class)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Portfolio {
-    @Id
-    private Long memberId;
-    @Id
-    private String stockId; // srtnCd
-    @Column
-    private float profitRate;
+    @EmbeddedId
+    private PortfolioPK portfolioPK;
+
+    @ManyToOne
+    @MapsId("memberId") // db -> member_id
+    private Member member;
+
+    @ManyToOne
+    @MapsId("stockId") // db -> stock_srtn_cd
+    private Stock stock;
+
+    // 매수가
     @Column
     private float purchasePrice;
+
+    // 매수 수량
     @Column
     private int quantity;
 
+    /**
+     * 파생 속성
+     */
+    // 총 매수 금액 = 매수가 * 매수 수량
+    @Column
+    private float purchaseAmount;
+
+    // 평가 금액 = 매수 수량 * 종가
+    @Column
+    private int equitiesValue;
+
+    // 수익률 = 평가 금액 / 총 매수 금액
+    @Column
+    private float profitRate;
+
+    @Column
+    // 평가 손익 = 평가 금액 - 총 매수 금액
+    private float gainsLosses;
+
+    // 파생 속성 연산
+    public void setDerivedAttributes() {
+        this.purchaseAmount = purchasePrice * quantity;
+        this.equitiesValue = quantity * stock.getClpr();
+        this.profitRate = (equitiesValue / purchaseAmount - 1) * 100; // 예외처리 필요 0
+        this.gainsLosses = equitiesValue - purchaseAmount;
+    }
+
+    @Override
+    public String toString() {
+        return "Portfolio{" +
+                "portfolioPK=" + portfolioPK +
+                ", member=" + member +
+                ", stock=" + stock +
+                ", purchasePrice=" + purchasePrice +
+                ", quantity=" + quantity +
+                ", purchaseAmount=" + purchaseAmount +
+                ", equitiesValue=" + equitiesValue +
+                ", profitRate=" + profitRate +
+                ", gainsLosses=" + gainsLosses +
+                '}';
+    }
 }
