@@ -21,12 +21,12 @@ public class PortfolioController {
     }
 
     @GetMapping("/v1/portfolios/{memberId}")
-    public List<Portfolio> findByMemberId(@PathVariable Long memberId) {
+    public List<Portfolio> findByMemberId(@PathVariable String memberId) {
         return portfolioService.findByMemberId(memberId);
     }
 
     @GetMapping("/v1/portfolios/profits/{memberId}")
-    public float getMemberProfitRate(@PathVariable Long memberId) {
+    public float getMemberProfitRate(@PathVariable String memberId) {
         return portfolioService.getMemberProfitRate(memberId);
     }
     @GetMapping("/v1/pptest")

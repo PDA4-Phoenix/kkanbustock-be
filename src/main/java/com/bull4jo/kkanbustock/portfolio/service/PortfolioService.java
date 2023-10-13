@@ -29,16 +29,12 @@ public class PortfolioService {
 
     // 포트폴리오 전체조회 (멤버 id로)
     @Transactional(readOnly = true)
-    public List<Portfolio> findByMemberId(final Long memberId) {
-        List<Portfolio> portfoliosByMemberId = portfolioRepository.findPortfoliosByMemberId(memberId);
-        for (Portfolio portfolio : portfoliosByMemberId) {
-            System.out.println(portfolio.toString());
-        }
-        return portfoliosByMemberId;
+    public List<Portfolio> findByMemberId(final String memberId) {
+        return portfolioRepository.findPortfoliosByMemberId(memberId);
     }
 
     @Transactional(readOnly = true)
-    public float getMemberProfitRate(final Long memberId) {
+    public float getMemberProfitRate(final String memberId) {
         // 멤버가 없을 경우 예외처리 필요
 
         // 포폴 없을경우 예외처리 필요
