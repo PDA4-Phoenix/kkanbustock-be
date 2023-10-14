@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -27,13 +28,13 @@ public class SolvedStockQuiz {
     private StockQuiz stockQuiz;
 
     @Column
-    private Date solvedDate;
+    private LocalDateTime solvedDate;
 
     @Column
     private Boolean isCorrect;
 
     @Builder
-    public SolvedStockQuiz(Member member, StockQuiz stockQuiz, Date solvedDate, Boolean isCorrect) {
+    public SolvedStockQuiz(Member member, StockQuiz stockQuiz, LocalDateTime solvedDate, Boolean isCorrect) {
         this.member = member;
         this.stockQuiz = stockQuiz;
         this.solvedDate = solvedDate;

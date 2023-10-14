@@ -11,6 +11,5 @@ import java.util.Date;
 public class QuizRequest {
     private final Long memberId;
     private final Long stockQuizId;
-    private final Date solveDate;
     private final Boolean isCorrect;
 }
