@@ -22,10 +22,16 @@ public class GroupController {
     }
 
     @GetMapping("/v1/groups")
-    public ResponseEntity<List<GroupResponse>> getGroups() {
+    public ResponseEntity<List<GroupResponse>> getMyGroups(@RequestBody GroupRequest groupRequest) {
         return ResponseEntity
-                .ok(groupService.getGroups());
+                .ok(groupService.getMyGroups(groupRequest));
     }
+
+//    @GetMapping("/v1/groups")
+//    public ResponseEntity<List<GroupResponse>> getGroups() {
+//        return ResponseEntity
+//                .ok(groupService.getGroups());
+//    }
 
     @GetMapping("/v1/groups/{groupId}")
     public ResponseEntity<GroupResponse> getGroup(

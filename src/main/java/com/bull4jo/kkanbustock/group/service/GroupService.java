@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +35,21 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
-    
+    @Transactional(readOnly = true)
+    public List<GroupResponse> getMyGroups(GroupRequest groupRequest) {
+        Long memberId = groupRequest.getMemberId();
+        List<KkanbuGroup> hostGroups = groupRepository.findByHostId(memberId);
+        List<KkanbuGroup> guestGroups = groupRepository.findByGuestId(memberId);
+
+        List<KkanbuGroup> allGroups = new ArrayList<>();
+        allGroups.addAll(hostGroups);
+        allGroups.addAll(guestGroups);
+
+        return allGroups
+                .stream()
+                .map(GroupResponse::new)
+                .collect(Collectors.toList());
+    }
 
     @Transactional(readOnly = true)
     public List<GroupResponse> getGroups() {
