@@ -40,7 +40,13 @@ public class Member {
     @OneToMany(mappedBy = "guest")
     private List<KkanbuGroup> guestKkanbuGroups;
 
-    public Member(Long id, String email, String password, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes, List<KkanbuGroup> hostKkanbuGroups, List<KkanbuGroup> guestKkanbuGroups) {
+    @OneToMany(mappedBy = "host")
+    private List<GroupApplication> sentGroupApplications;
+
+    @OneToMany(mappedBy = "guest")
+    private List<GroupApplication> receivedGroupApplications;
+
+    public Member(Long id, String email, String password, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes, List<KkanbuGroup> hostKkanbuGroups, List<KkanbuGroup> guestKkanbuGroups, List<GroupApplication> sentGroupApplications, List<GroupApplication> receivedGroupApplications) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -49,5 +55,7 @@ public class Member {
         this.solvedStockQuizzes = solvedStockQuizzes;
         this.hostKkanbuGroups = hostKkanbuGroups;
         this.guestKkanbuGroups = guestKkanbuGroups;
+        this.sentGroupApplications = sentGroupApplications;
+        this.receivedGroupApplications = receivedGroupApplications;
     }
 }
