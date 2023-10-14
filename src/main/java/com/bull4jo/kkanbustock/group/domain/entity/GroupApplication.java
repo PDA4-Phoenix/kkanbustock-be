@@ -12,9 +12,10 @@ import java.time.LocalDateTime;
 @Table
 @Getter
 @NoArgsConstructor
-public class KkanbuGroup {
+public class GroupApplication {
+
     @EmbeddedId
-    private KkanbuGroupPK kkanbuGroupPK;
+    private KkanbuGroupPK groupApplicationPk;
 
     @ManyToOne
     @MapsId("hostId")
@@ -27,27 +28,23 @@ public class KkanbuGroup {
     @Column(nullable = false)
     private String hostName;
 
-    @Column(nullable = false)
-    private String guestName;
-
     @Column
-    private float profitRate;
-
-    @Column(nullable = false)
-    private String name;
+    private boolean approvalStatus;
 
     @Column(nullable = false)
     private LocalDateTime createdDate;
 
     @Builder
-    public KkanbuGroup(KkanbuGroupPK kkanbuGroupPK, Member host, Member guest, String hostName, String guestName, float profitRate, String name, LocalDateTime createdDate) {
-        this.kkanbuGroupPK = kkanbuGroupPK;
+    public GroupApplication(KkanbuGroupPK groupApplicationPk, Member host, Member guest, String hostName, boolean approvalStatus, LocalDateTime createdDate) {
+        this.groupApplicationPk = groupApplicationPk;
         this.host = host;
         this.guest = guest;
         this.hostName = hostName;
-        this.guestName = guestName;
-        this.profitRate = profitRate;
-        this.name = name;
+        this.approvalStatus = approvalStatus;
         this.createdDate = createdDate;
+    }
+
+    public void setApprovalStatus(boolean approvalStatus) {
+        this.approvalStatus = approvalStatus;
     }
 }

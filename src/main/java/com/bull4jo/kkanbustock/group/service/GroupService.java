@@ -1,77 +1,165 @@
 package com.bull4jo.kkanbustock.group.service;
 
-import com.bull4jo.kkanbustock.group.controller.dto.GroupNameRequest;
-import com.bull4jo.kkanbustock.group.controller.dto.InviteCodeGenerationResponse;
+import com.bull4jo.kkanbustock.group.controller.dto.*;
+import com.bull4jo.kkanbustock.group.domain.entity.GroupApplication;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroup;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroupPK;
+import com.bull4jo.kkanbustock.group.repository.GroupApplicationRepository;
 import com.bull4jo.kkanbustock.group.repository.GroupRepository;
+import com.bull4jo.kkanbustock.member.domain.entity.Member;
+import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class GroupService {
 
     private final GroupRepository groupRepository;
+    private final GroupApplicationRepository groupApplicationRepository;
+    private final MemberRepository memberRepository;
     private final PortfolioRepository portfolioRepository;
 
-    public String setGroupName(GroupNameRequest groupNameRequest) {
-        String name = groupNameRequest.getName();
-        Long hostId = groupNameRequest.getHostId();
+    @Transactional(readOnly = true)
+    public List<ReceivedGroupApplicationListResponse> getReceivedGroupApplications(ReceivedGroupApplicationListRequest receivedGroupApplicationListRequest) {
+        Long guestId = receivedGroupApplicationListRequest.getGuestId();
+        List<GroupApplication> receivedGroupApplications = groupApplicationRepository.findByGuestId(guestId);
+        return receivedGroupApplications
+                .stream()
+                .map(ReceivedGroupApplicationListResponse::new)
+                .collect(Collectors.toList());
+    }
 
-        if (isGroupNameExists(name)) {
-            return "중복입니다."; // 그룹 이름이 중복일 경우
+    @Transactional(readOnly = true)
+    public List<GroupResponse> getMyGroups(GroupRequest groupRequest) {
+        Long memberId = groupRequest.getMemberId();
+        List<KkanbuGroup> hostGroups = groupRepository.findByHostId(memberId);
+        List<KkanbuGroup> guestGroups = groupRepository.findByGuestId(memberId);
+
+        List<KkanbuGroup> allGroups = new ArrayList<>();
+        allGroups.addAll(hostGroups);
+        allGroups.addAll(guestGroups);
+
+        return allGroups
+                .stream()
+                .map(GroupResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<GroupResponse> getGroups() {
+        return groupRepository
+                .findAll()
+                .stream()
+                .map(GroupResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public GroupResponse getGroup(Long kkanbuGroupPk) {
+        KkanbuGroup kkanbuGroup = groupRepository.findById(kkanbuGroupPk).orElseThrow();
+        return new GroupResponse(kkanbuGroup);
+    }
+
+    @Transactional
+    public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
+        String email = groupApplicationRequest.getEmail();
+        Long guestId = getGuestId(email);
+
+        if (guestId == null) {
+            throw new IllegalArgumentException("Invalid guest email: " + email);
+        }
+
+        Long hostId = groupApplicationRequest.getHostId();
+        LocalDateTime createdDate = LocalDateTime.now();
+
+        Member host = memberRepository.findById(hostId).orElseThrow();
+        Member guest = memberRepository.findById(guestId).orElseThrow();
+        String hostName = host.getNickname();
+
+        GroupApplication groupApplication = GroupApplication
+                .builder()
+                .host(host)
+                .guest(guest)
+                .hostName(hostName)
+                .createdDate(createdDate)
+                .build();
+
+        groupApplicationRepository.save(groupApplication);
+    }
+
+    @Transactional
+    public void changeApprovalStatus(GroupApprovalStatusRequest groupApprovalStatusRequest) {
+        Long groupApplicationPk = groupApprovalStatusRequest.getGroupApplicationPk();
+        boolean approvalStatus = groupApprovalStatusRequest.isApprovalStatus();
+
+        GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
+        groupApplication.setApprovalStatus(approvalStatus);
+
+        if (approvalStatus) {
+            createGroup(groupApplicationPk);
+            groupApplicationRepository.delete(groupApplication);
         } else {
-            return "중복이 아닙니다."; // 그룹 이름이 중복이 아닌 경우
+            groupApplicationRepository.delete(groupApplication);
         }
     }
 
-    public InviteCodeGenerationResponse setInviteCode(String name) {
-        String inviteCode;
+    private void createGroup(Long groupApplicationPk) {
+        GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
+        Member host = groupApplication.getHost();
+        Member guest = groupApplication.getGuest();
+        String hostName = host.getNickname();
+        String guestName = guest.getNickname();
+        String name = generateGroupName();
+        float profitRate = getProfitRate();
+        LocalDateTime createdDate = LocalDateTime.now();
 
-        // 중복이 아닐 때까지 초대코드 생성 반복
-        do {
-            inviteCode = generateRandomCode();
-        } while (isInviteCodeExists(inviteCode));
-
-        // KkanbuGroup 객체 생성 및 저장
-        KkanbuGroup kkanbuGroup = KkanbuGroup.builder()
+        KkanbuGroup kkanbuGroup = KkanbuGroup
+                .builder()
+                .host(host)
+                .guest(guest)
+                .hostName(hostName)
+                .guestName(guestName)
                 .name(name)
-                .inviteCode(inviteCode)
+                .profitRate(profitRate)
+                .createdDate(createdDate)
                 .build();
 
         groupRepository.save(kkanbuGroup);
+    }
 
-        // 초대코드 반환
-        return InviteCodeGenerationResponse.builder().inviteCode(inviteCode).build();
+    private String generateGroupName() {
+        // 그룹 이름을 만들어주는 로직
+        // 임시로 리턴
+        return "test";
+    }
+
+    private Long getGuestId(String email) {
+        Member member = memberRepository.findByEmail(email);
+        if (member != null) {
+            return member.getId();
+        }
+        return null;
+    }
+
+    private float getProfitRate() {
+        // 수익률을 계산하는 로직
+        // 임시로 리턴
+        return 100;
     }
 
     private boolean isGroupNameExists(String name) {
         Optional<KkanbuGroup> existingGroupName = groupRepository.findByName(name);
         return existingGroupName.isPresent(); // 값이 있다면 true
     }
-
-    private String generateRandomCode() {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-        Random random = new Random();
-        StringBuilder code = new StringBuilder();
-
-        for (int i = 0; i < 5; i++) {
-            code.append(characters.charAt(random.nextInt(characters.length())));
-        }
-
-        return code.toString();
-    }
-
-    private boolean isInviteCodeExists(String inviteCode) {
-        Optional<KkanbuGroup> existingInviteCode = groupRepository.findByInviteCode(inviteCode);
-        return existingInviteCode.isPresent(); // 값이 있다면 true
-    }
-
     public float getGroupProfitRate(KkanbuGroupPK kkanbuGroupPK) {
         Float hostTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getHostId());
         Float hostTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getHostId());
