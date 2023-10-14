@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface GroupApplicationRepository extends JpaRepository<GroupApplication, KkanbuGroupPK> {
     List<GroupApplication> findByGuestId(String guestId);
+
+    Optional<List<GroupApplication>> findByGuestIdAndApprovalStatus(String guestId, boolean approvalStatus);
 }

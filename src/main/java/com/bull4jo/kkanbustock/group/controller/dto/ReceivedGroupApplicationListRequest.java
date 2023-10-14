@@ -7,4 +7,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class ReceivedGroupApplicationListRequest {
     private final String guestId;
+    private final boolean approvalStatus;
 }

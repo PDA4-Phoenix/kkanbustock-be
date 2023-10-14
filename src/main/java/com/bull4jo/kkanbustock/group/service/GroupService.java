@@ -29,9 +29,10 @@ public class GroupService {
     private final PortfolioRepository portfolioRepository;
 
     @Transactional(readOnly = true)
-    public List<ReceivedGroupApplicationListResponse> getReceivedGroupApplications(ReceivedGroupApplicationListRequest receivedGroupApplicationListRequest) {
-        String guestId = receivedGroupApplicationListRequest.getGuestId();
-        List<GroupApplication> receivedGroupApplications = groupApplicationRepository.findByGuestId(guestId);
+    public List<ReceivedGroupApplicationListResponse> getReceivedGroupApplications(final String guestId, final boolean approvalStatus) {
+        List<GroupApplication> receivedGroupApplications = groupApplicationRepository
+                .findByGuestIdAndApprovalStatus(guestId, approvalStatus)
+                .orElseThrow();
         return receivedGroupApplications
                 .stream()
                 .map(ReceivedGroupApplicationListResponse::new)

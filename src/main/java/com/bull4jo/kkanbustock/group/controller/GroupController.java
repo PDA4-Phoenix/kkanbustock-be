@@ -24,7 +24,7 @@ public class GroupController {
     @GetMapping("v1/groups/application")
     public ResponseEntity<List<ReceivedGroupApplicationListResponse>> getReceivedGroupApplications(@RequestParam final String guestId, @RequestParam final boolean approvalStatus) {
         return ResponseEntity
-                .ok(groupService.getReceivedGroupApplications(receivedGroupApplicationListRequest));
+                .ok(groupService.getReceivedGroupApplications(guestId, approvalStatus));
     }
 
     @GetMapping("/v1/groups")
