@@ -1,15 +1,11 @@
 package com.bull4jo.kkanbustock.group.controller;
 
-import com.bull4jo.kkanbustock.group.controller.dto.GroupApplicationRequest;
-import com.bull4jo.kkanbustock.group.controller.dto.GroupApplicationResponse;
-import com.bull4jo.kkanbustock.group.controller.dto.GroupApprovalStatusRequest;
-import com.bull4jo.kkanbustock.group.controller.dto.GroupResponse;
+import com.bull4jo.kkanbustock.group.controller.dto.*;
 import com.bull4jo.kkanbustock.group.service.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.*;
 import java.util.List;
 
 @RestController
@@ -20,9 +16,9 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping("v1/groups/application")
-    public ResponseEntity<List<GroupApplicationResponse>> getGroupApplications() {
+    public ResponseEntity<List<GroupApplicationListResponse>> getGroupApplications(@RequestBody GroupApplicationListRequest groupApplicationListRequest) {
         return ResponseEntity
-                .ok(groupService.getGroupApplications());
+                .ok(groupService.getGroupApplications(groupApplicationListRequest));
     }
 
     @GetMapping("/v1/groups")
