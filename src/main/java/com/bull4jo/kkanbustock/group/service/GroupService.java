@@ -40,14 +40,10 @@ public class GroupService {
     }
 
     @Transactional(readOnly = true)
-    public List<GroupResponse> getMyGroups(GroupRequest groupRequest) {
-        String memberId = groupRequest.getMemberId();
-        List<KkanbuGroup> hostGroups = groupRepository.findByHostId(memberId);
-        List<KkanbuGroup> guestGroups = groupRepository.findByGuestId(memberId);
-
-        List<KkanbuGroup> allGroups = new ArrayList<>();
-        allGroups.addAll(hostGroups);
-        allGroups.addAll(guestGroups);
+    public List<GroupResponse> getMyGroups(final String memberId) {
+        List<KkanbuGroup> allGroups = groupRepository
+                .findAllByHostIdOrGuestId(memberId)
+                .orElseThrow();
 
         return allGroups
                 .stream()
