@@ -11,7 +11,7 @@ import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,13 +24,15 @@ public class GroupService {
     private final MemberRepository memberRepository;
 
     public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
-        Long hostId = groupApplicationRequest.getHostId();
         String email = groupApplicationRequest.getEmail();
         Long guestId = getGuestId(email);
 
         if (guestId == null) {
             throw new IllegalArgumentException("Invalid guest email: " + email);
         }
+
+        Long hostId = groupApplicationRequest.getHostId();
+        LocalDateTime createdDate = LocalDateTime.now();
 
         Member host = memberRepository.findById(hostId).orElseThrow();
         Member guest = memberRepository.findById(guestId).orElseThrow();
@@ -39,6 +41,7 @@ public class GroupService {
                 .builder()
                 .host(host)
                 .guest(guest)
+                .createdDate(createdDate)
                 .build();
 
         groupApplicationRepository.save(groupApplication);
@@ -51,12 +54,31 @@ public class GroupService {
         GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
 
         if (Objects.equals(approvalStatus, "승인")) {
-            groupApplication.setApprovalStatus(approvalStatus);
-            groupApplicationRepository.save(groupApplication);
+            createGroup(groupApplicationPk);
+            groupApplicationRepository.delete(groupApplication);
         } else {
-            // 거절 - 해당 신청 삭제
             groupApplicationRepository.delete(groupApplication);
         }
+    }
+
+    private void createGroup(Long groupApplicationPk) {
+        GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
+        Member host = groupApplication.getHost();
+        Member guest = groupApplication.getGuest();
+        String name = generateGroupName();
+        float profitRate = getProfitRate();
+        LocalDateTime createdDate = LocalDateTime.now();
+
+        KkanbuGroup kkanbuGroup = KkanbuGroup
+                .builder()
+                .host(host)
+                .guest(guest)
+                .name(name)
+                .profitRate(profitRate)
+                .createdDate(createdDate)
+                .build();
+
+        groupRepository.save(kkanbuGroup);
     }
 
     private String generateGroupName() {
