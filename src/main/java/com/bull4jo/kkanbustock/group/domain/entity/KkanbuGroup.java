@@ -24,9 +24,6 @@ public class KkanbuGroup {
     @MapsId("guestId")
     private Member guest;
 
-    @Column(columnDefinition = "VARCHAR(2) DEFAULT '대기'")
-    private String approvalStatus; // 대기, 승인, 거절
-
     @Column
     private float profitRate;
 
@@ -37,21 +34,12 @@ public class KkanbuGroup {
     private LocalDateTime createdDate;
 
     @Builder
-    public KkanbuGroup(KkanbuGroupPK kkanbuGroupPK, Member host, Member guest, String approvalStatus, float profitRate, String name, LocalDateTime createdDate) {
+    public KkanbuGroup(KkanbuGroupPK kkanbuGroupPK, Member host, Member guest, float profitRate, String name, LocalDateTime createdDate) {
         this.kkanbuGroupPK = kkanbuGroupPK;
         this.host = host;
         this.guest = guest;
-        this.approvalStatus = approvalStatus;
         this.profitRate = profitRate;
         this.name = name;
         this.createdDate = createdDate;
-    }
-
-    public void setApprovalStatus(String approvalStatus) {
-        this.approvalStatus = approvalStatus;
-    }
-
-    public void setProfitRate(float profitRate) {
-        this.profitRate = profitRate;
     }
 }
