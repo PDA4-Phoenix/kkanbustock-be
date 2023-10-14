@@ -24,6 +24,12 @@ public class KkanbuGroup {
     @MapsId("guestId")
     private Member guest;
 
+    @Column(nullable = false)
+    private String hostName;
+
+    @Column(nullable = false)
+    private String guestName;
+
     @Column
     private float profitRate;
 
@@ -34,10 +40,12 @@ public class KkanbuGroup {
     private LocalDateTime createdDate;
 
     @Builder
-    public KkanbuGroup(KkanbuGroupPK kkanbuGroupPK, Member host, Member guest, float profitRate, String name, LocalDateTime createdDate) {
+    public KkanbuGroup(KkanbuGroupPK kkanbuGroupPK, Member host, Member guest, String hostName, String guestName, float profitRate, String name, LocalDateTime createdDate) {
         this.kkanbuGroupPK = kkanbuGroupPK;
         this.host = host;
         this.guest = guest;
+        this.hostName = hostName;
+        this.guestName = guestName;
         this.profitRate = profitRate;
         this.name = name;
         this.createdDate = createdDate;
