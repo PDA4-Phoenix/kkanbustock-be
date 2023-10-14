@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface SolvedQuizRepository extends JpaRepository<SolvedStockQuiz, Long> {
-    List<SolvedStockQuiz> findByMemberId(Long memberId);
 }
