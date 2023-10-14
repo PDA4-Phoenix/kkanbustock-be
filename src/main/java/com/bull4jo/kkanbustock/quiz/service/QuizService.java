@@ -2,6 +2,7 @@ package com.bull4jo.kkanbustock.quiz.service;
 
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
+import com.bull4jo.kkanbustock.quiz.controller.dto.DailyQuizRequest;
 import com.bull4jo.kkanbustock.quiz.domain.entity.SolvedStockQuiz;
 import com.bull4jo.kkanbustock.quiz.domain.entity.StockQuiz;
 import com.bull4jo.kkanbustock.quiz.controller.dto.QuizRequest;
@@ -11,8 +12,11 @@ import com.bull4jo.kkanbustock.quiz.repository.SolvedQuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,14 +26,38 @@ public class QuizService {
     private final MemberRepository memberRepository;
     private final SolvedQuizRepository solvedQuizRepository;
 
-    public QuizResponse getQuiz(long quizId) {
-        StockQuiz stockQuiz = quizRepository.findById(quizId).orElseThrow();
-        return QuizResponse.of(stockQuiz);
+    public QuizResponse getDailyQuiz(DailyQuizRequest dailyQuizRequest) {
+        Long memberId = dailyQuizRequest.getMemberId();
+
+        List<SolvedStockQuiz> solvedQuizzes = solvedQuizRepository.findByMemberId(memberId);
+        List<StockQuiz> quizzes = quizRepository.findAll();
+        List<Long> unsolvedQuizIds = new ArrayList<>();
+
+        for (StockQuiz quiz : quizzes) {
+            Long quizId = quiz.getId();
+            boolean isSolved = solvedQuizzes.stream().anyMatch(solvedQuiz -> solvedQuiz.getStockQuiz().getId().equals(quizId));
+            if (!isSolved) {
+                unsolvedQuizIds.add(quizId);
+            }
+        }
+
+        if (unsolvedQuizIds.isEmpty()) {
+            return null;
+        }
+
+        Random random = new Random();
+        Long randomUnsolvedQuizId = unsolvedQuizIds.get(random.nextInt(unsolvedQuizIds.size()));
+
+        StockQuiz stockQuiz = quizRepository.findById(randomUnsolvedQuizId).orElseThrow();
+        return QuizResponse.builder().stockQuiz(stockQuiz).build();
     }
 
     public List<QuizResponse> getQuizzes() {
-        List<StockQuiz> quizzes = quizRepository.findAll();
-        return quizzes.stream().map(QuizResponse::of).toList();
+        return quizRepository
+                .findAll()
+                .stream()
+                .map(QuizResponse::new)
+                .collect(Collectors.toList());
     }
 
     public void saveSolvedQuiz(QuizRequest quizRequest) {
