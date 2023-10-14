@@ -1,11 +1,11 @@
 package com.bull4jo.kkanbustock.group.controller;
 
 import com.bull4jo.kkanbustock.group.controller.dto.GroupApplicationRequest;
+import com.bull4jo.kkanbustock.group.controller.dto.GroupApplicationResponse;
 import com.bull4jo.kkanbustock.group.controller.dto.GroupApprovalStatusRequest;
 import com.bull4jo.kkanbustock.group.controller.dto.GroupResponse;
 import com.bull4jo.kkanbustock.group.service.GroupService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +18,12 @@ import java.util.List;
 public class GroupController {
 
     private final GroupService groupService;
+
+    @GetMapping("v1/groups/application")
+    public ResponseEntity<List<GroupApplicationResponse>> getGroupApplications() {
+        return ResponseEntity
+                .ok(groupService.getGroupApplications());
+    }
 
     @GetMapping("/v1/groups")
     public ResponseEntity<List<GroupResponse>> getGroups() {
@@ -33,12 +39,12 @@ public class GroupController {
                 .ok(groupService.getGroup(groupId));
     }
 
-    @PostMapping("/v1/groups")
+    @PostMapping("/v1/groups/application")
     public void applyGroup(@RequestBody GroupApplicationRequest groupApplicationRequest) {
         groupService.applyGroup(groupApplicationRequest);
     }
 
-    @PatchMapping("/v1/groups")
+    @PostMapping("/v1/groups")
     public void changeApprovalStatus(@RequestBody GroupApprovalStatusRequest groupApprovalStatusRequest) {
         groupService.changeApprovalStatus(groupApprovalStatusRequest);
     }

@@ -1,6 +1,7 @@
 package com.bull4jo.kkanbustock.group.service;
 
 import com.bull4jo.kkanbustock.group.controller.dto.GroupApplicationRequest;
+import com.bull4jo.kkanbustock.group.controller.dto.GroupApplicationResponse;
 import com.bull4jo.kkanbustock.group.controller.dto.GroupApprovalStatusRequest;
 import com.bull4jo.kkanbustock.group.controller.dto.GroupResponse;
 import com.bull4jo.kkanbustock.group.domain.entity.GroupApplication;
@@ -24,6 +25,14 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupApplicationRepository groupApplicationRepository;
     private final MemberRepository memberRepository;
+
+    public List<GroupApplicationResponse> getGroupApplications() {
+        return groupApplicationRepository
+                .findAll()
+                .stream()
+                .map(GroupApplicationResponse::new)
+                .collect(Collectors.toList());
+    }
 
     public List<GroupResponse> getGroups() {
         return groupRepository
@@ -51,11 +60,13 @@ public class GroupService {
 
         Member host = memberRepository.findById(hostId).orElseThrow();
         Member guest = memberRepository.findById(guestId).orElseThrow();
+        String hostName = host.getNickname();
 
         GroupApplication groupApplication = GroupApplication
                 .builder()
                 .host(host)
                 .guest(guest)
+                .hostName(hostName)
                 .createdDate(createdDate)
                 .build();
 

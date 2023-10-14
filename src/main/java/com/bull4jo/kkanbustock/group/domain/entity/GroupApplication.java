@@ -25,19 +25,21 @@ public class GroupApplication {
     @MapsId("guestId")
     private Member guest;
 
+    @Column(nullable = false)
+    private String hostName;
+
     @Column
     private boolean approvalStatus;
 
     @Column(nullable = false)
     private LocalDateTime createdDate;
 
-    // 호스트 이름은 이 테이블에 저장하지 않고 코드 상에서 hostId로 검색해서 띄우는 걸로?
-
     @Builder
-    public GroupApplication(KkanbuGroupPK groupApplicationPk, Member host, Member guest, boolean approvalStatus, LocalDateTime createdDate) {
+    public GroupApplication(KkanbuGroupPK groupApplicationPk, Member host, Member guest, String hostName, boolean approvalStatus, LocalDateTime createdDate) {
         this.groupApplicationPk = groupApplicationPk;
         this.host = host;
         this.guest = guest;
+        this.hostName = hostName;
         this.approvalStatus = approvalStatus;
         this.createdDate = createdDate;
     }
