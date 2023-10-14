@@ -4,6 +4,7 @@ import com.bull4jo.kkanbustock.quiz.domain.entity.SolvedStockQuiz;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
@@ -11,10 +12,10 @@ import java.util.List;
 @Entity
 @Table
 @Getter
+@Setter
 @NoArgsConstructor
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     @Column

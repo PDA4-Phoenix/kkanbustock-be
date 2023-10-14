@@ -1,7 +1,5 @@
 package com.bull4jo.kkanbustock.login.service;
 
-
-import com.bull4jo.kkanbustock.login.domain.entity.Login;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +21,7 @@ public class LoginService {
         this.env = env;
     }
 
-    public void socialLogin(String code, String registrationId) {
+    public Member socialLogin(String code, String registrationId) {
         log.info("======================================================");
         String accessToken = getAccessToken(code, registrationId);
         JsonNode userResourceNode = getUserResource(accessToken, registrationId);
@@ -44,6 +42,7 @@ public class LoginService {
         log.info("email = {}", member.getEmail());
         log.info("nickname = {}", member.getNickname());
         log.info("======================================================");
+        return member;
     }
 
 
