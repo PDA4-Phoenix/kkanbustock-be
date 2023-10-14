@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -76,5 +78,37 @@ public class PortfolioService {
 
         System.out.println(portfolio);
         return portfolioRepository.save(portfolio).getPortfolioPK().getMemberId();
+    }
+
+
+    /**
+     * 미완;
+     * @Query("SELECT p FROM Portfolio p ORDER BY RAND()")
+     * stockRepository에서 랜덤 n개 엔티티 가져오는 로직 개선필요..
+     */
+    @Transactional
+    public void generateRandomPortfolio(final String memberId) {
+        Random random = new Random();
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        int min = 2;
+        int max = 5;
+        int rdm = random.nextInt(max - min + 1) - min;
+        List<Stock> nRandomStock = getNRandomStock(rdm);
+        for (Stock stock: nRandomStock) {
+            Portfolio portfolio = Portfolio
+                    .builder()
+                    .member(member)
+                    .stock(stock)
+                    .purchasePrice(3)
+                    .quantity(3)
+                    .build();
+            portfolio.setDerivedAttributes();
+            portfolioRepository.save(portfolio);
+        }
+
+    }
+
+    private List<Stock> getNRandomStock(int n) {
+        return new ArrayList<>();
     }
 }
