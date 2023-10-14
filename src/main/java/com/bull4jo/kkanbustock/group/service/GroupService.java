@@ -25,14 +25,16 @@ public class GroupService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public List<GroupApplicationListResponse> getGroupApplications(GroupApplicationListRequest groupApplicationListRequest) {
-        Long guestId = groupApplicationListRequest.getGuestId();
+    public List<ReceivedGroupApplicationListResponse> getReceivedGroupApplications(ReceivedGroupApplicationListRequest receivedGroupApplicationListRequest) {
+        Long guestId = receivedGroupApplicationListRequest.getGuestId();
         List<GroupApplication> receivedGroupApplications = groupApplicationRepository.findByGuestId(guestId);
         return receivedGroupApplications
                 .stream()
-                .map(GroupApplicationListResponse::new)
+                .map(ReceivedGroupApplicationListResponse::new)
                 .collect(Collectors.toList());
     }
+
+    
 
     @Transactional(readOnly = true)
     public List<GroupResponse> getGroups() {

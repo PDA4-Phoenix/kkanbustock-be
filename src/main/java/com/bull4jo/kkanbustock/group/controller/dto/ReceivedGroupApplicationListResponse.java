@@ -6,12 +6,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class GroupApplicationListResponse {
+public class ReceivedGroupApplicationListResponse {
     private final KkanbuGroupPK groupApplicationPk;
     private final String hostName;
 
     @Builder
-    public GroupApplicationListResponse(GroupApplication groupApplication) {
+    public ReceivedGroupApplicationListResponse(GroupApplication groupApplication) {
         this.groupApplicationPk = groupApplication.getGroupApplicationPk();
         this.hostName = groupApplication.getHostName();
     }

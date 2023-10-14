@@ -16,9 +16,9 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping("v1/groups/application")
-    public ResponseEntity<List<GroupApplicationListResponse>> getGroupApplications(@RequestBody GroupApplicationListRequest groupApplicationListRequest) {
+    public ResponseEntity<List<ReceivedGroupApplicationListResponse>> getReceivedGroupApplications(@RequestBody ReceivedGroupApplicationListRequest receivedGroupApplicationListRequest) {
         return ResponseEntity
-                .ok(groupService.getGroupApplications(groupApplicationListRequest));
+                .ok(groupService.getReceivedGroupApplications(receivedGroupApplicationListRequest));
     }
 
     @GetMapping("/v1/groups")

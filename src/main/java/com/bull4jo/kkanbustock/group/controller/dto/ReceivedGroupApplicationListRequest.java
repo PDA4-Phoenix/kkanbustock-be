@@ -5,6 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-public class GroupApplicationListRequest {
+public class ReceivedGroupApplicationListRequest {
     private final Long guestId;
 }
