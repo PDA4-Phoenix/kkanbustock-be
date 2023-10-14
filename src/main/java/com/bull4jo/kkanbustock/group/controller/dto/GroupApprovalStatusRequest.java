@@ -7,5 +7,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GroupApprovalStatusRequest {
     private final Long groupApplicationPk;
-    private final String approvalStatus;
+    private final boolean approvalStatus;
 }
