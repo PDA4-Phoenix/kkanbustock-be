@@ -30,7 +30,7 @@ public class GroupService {
 
     @Transactional(readOnly = true)
     public List<ReceivedGroupApplicationListResponse> getReceivedGroupApplications(ReceivedGroupApplicationListRequest receivedGroupApplicationListRequest) {
-        Long guestId = receivedGroupApplicationListRequest.getGuestId();
+        String guestId = receivedGroupApplicationListRequest.getGuestId();
         List<GroupApplication> receivedGroupApplications = groupApplicationRepository.findByGuestId(guestId);
         return receivedGroupApplications
                 .stream()
@@ -40,7 +40,7 @@ public class GroupService {
 
     @Transactional(readOnly = true)
     public List<GroupResponse> getMyGroups(GroupRequest groupRequest) {
-        Long memberId = groupRequest.getMemberId();
+        String memberId = groupRequest.getMemberId();
         List<KkanbuGroup> hostGroups = groupRepository.findByHostId(memberId);
         List<KkanbuGroup> guestGroups = groupRepository.findByGuestId(memberId);
 
@@ -64,7 +64,7 @@ public class GroupService {
     }
 
     @Transactional(readOnly = true)
-    public GroupResponse getGroup(Long kkanbuGroupPk) {
+    public GroupResponse getGroup(KkanbuGroupPK kkanbuGroupPk) {
         KkanbuGroup kkanbuGroup = groupRepository.findById(kkanbuGroupPk).orElseThrow();
         return new GroupResponse(kkanbuGroup);
     }
@@ -72,13 +72,13 @@ public class GroupService {
     @Transactional
     public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
         String email = groupApplicationRequest.getEmail();
-        Long guestId = getGuestId(email);
+        String guestId = getGuestId(email);
 
         if (guestId == null) {
             throw new IllegalArgumentException("Invalid guest email: " + email);
         }
 
-        Long hostId = groupApplicationRequest.getHostId();
+        String hostId = groupApplicationRequest.getHostId();
         LocalDateTime createdDate = LocalDateTime.now();
 
         Member host = memberRepository.findById(hostId).orElseThrow();
@@ -98,7 +98,7 @@ public class GroupService {
 
     @Transactional
     public void changeApprovalStatus(GroupApprovalStatusRequest groupApprovalStatusRequest) {
-        Long groupApplicationPk = groupApprovalStatusRequest.getGroupApplicationPk();
+        KkanbuGroupPK groupApplicationPk = groupApprovalStatusRequest.getGroupApplicationPk();
         boolean approvalStatus = groupApprovalStatusRequest.isApprovalStatus();
 
         GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
@@ -112,7 +112,7 @@ public class GroupService {
         }
     }
 
-    private void createGroup(Long groupApplicationPk) {
+    private void createGroup(KkanbuGroupPK groupApplicationPk) {
         GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
         Member host = groupApplication.getHost();
         Member guest = groupApplication.getGuest();
@@ -142,7 +142,7 @@ public class GroupService {
         return "test";
     }
 
-    private Long getGuestId(String email) {
+    private String getGuestId(String email) {
         Member member = memberRepository.findByEmail(email);
         if (member != null) {
             return member.getId();

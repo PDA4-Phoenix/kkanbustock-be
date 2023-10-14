@@ -14,7 +14,7 @@ public interface GroupRepository extends JpaRepository<KkanbuGroup, KkanbuGroupP
     Optional<KkanbuGroup> findByName(String name);
     Optional<KkanbuGroup> findByInviteCode(String inviteCode);
 
-    List<KkanbuGroup> findByHostId(KkanbuGroupPK memberId);
+    List<KkanbuGroup> findByHostId(String memberId);
 
-    List<KkanbuGroup> findByGuestId(KkanbuGroupPK memberId);
+    List<KkanbuGroup> findByGuestId(String memberId);
 }

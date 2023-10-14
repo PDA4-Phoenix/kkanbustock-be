@@ -6,5 +6,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class ReceivedGroupApplicationListRequest {
-    private final Long guestId;
+    private final String guestId;
 }

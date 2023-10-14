@@ -6,6 +6,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class GroupApplicationRequest {
-    private final Long hostId;
+    private final String hostId;
     private final String email;
 }

@@ -1,5 +1,6 @@
 package com.bull4jo.kkanbustock.group.controller;
 
+import com.bull4jo.kkanbustock.group.controller.dto.*;
 import com.bull4jo.kkanbustock.group.service.GroupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -38,7 +41,7 @@ public class GroupController {
 
     @GetMapping("/v1/groups/{groupId}")
     public ResponseEntity<GroupResponse> getGroup(
-            @PathVariable(value = "groupId") Long groupId
+            @PathVariable(value = "groupId") KkanbuGroupPK groupId
     ) {
         return ResponseEntity
                 .ok(groupService.getGroup(groupId));
