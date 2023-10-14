@@ -1,15 +1,10 @@
 package com.bull4jo.kkanbustock.quiz.controller.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Date;
-
-@RequiredArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public class QuizRequest {
     private final Long memberId;
-    private final Long stockQuizId;
-    private final Boolean isCorrect;
 }
