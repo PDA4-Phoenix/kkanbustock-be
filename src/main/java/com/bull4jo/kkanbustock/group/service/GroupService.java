@@ -2,6 +2,7 @@ package com.bull4jo.kkanbustock.group.service;
 
 import com.bull4jo.kkanbustock.group.controller.dto.GroupApplicationRequest;
 import com.bull4jo.kkanbustock.group.controller.dto.GroupApprovalStatusRequest;
+import com.bull4jo.kkanbustock.group.controller.dto.GroupResponse;
 import com.bull4jo.kkanbustock.group.domain.entity.GroupApplication;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroup;
 import com.bull4jo.kkanbustock.group.repository.GroupApplicationRepository;
@@ -12,8 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,19 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupApplicationRepository groupApplicationRepository;
     private final MemberRepository memberRepository;
+
+    public List<GroupResponse> getGroups() {
+        return groupRepository
+                .findAll()
+                .stream()
+                .map(GroupResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    public GroupResponse getGroup(Long kkanbuGroupPk) {
+        KkanbuGroup kkanbuGroup = groupRepository.findById(kkanbuGroupPk).orElseThrow();
+        return new GroupResponse(kkanbuGroup);
+    }
 
     public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
         String email = groupApplicationRequest.getEmail();
@@ -47,13 +62,13 @@ public class GroupService {
         groupApplicationRepository.save(groupApplication);
     }
 
-    private void changeApprovalStatus(GroupApprovalStatusRequest groupApprovalStatusRequest) {
+    public void changeApprovalStatus(GroupApprovalStatusRequest groupApprovalStatusRequest) {
         Long groupApplicationPk = groupApprovalStatusRequest.getGroupApplicationPk();
-        String approvalStatus = groupApprovalStatusRequest.getApprovalStatus();
+        boolean approvalStatus = groupApprovalStatusRequest.isApprovalStatus();
 
         GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
 
-        if (Objects.equals(approvalStatus, "승인")) {
+        if (approvalStatus) {
             createGroup(groupApplicationPk);
             groupApplicationRepository.delete(groupApplication);
         } else {
@@ -65,6 +80,8 @@ public class GroupService {
         GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
         Member host = groupApplication.getHost();
         Member guest = groupApplication.getGuest();
+        String hostName = host.getNickname();
+        String guestName = guest.getNickname();
         String name = generateGroupName();
         float profitRate = getProfitRate();
         LocalDateTime createdDate = LocalDateTime.now();
@@ -73,6 +90,8 @@ public class GroupService {
                 .builder()
                 .host(host)
                 .guest(guest)
+                .hostName(hostName)
+                .guestName(guestName)
                 .name(name)
                 .profitRate(profitRate)
                 .createdDate(createdDate)
