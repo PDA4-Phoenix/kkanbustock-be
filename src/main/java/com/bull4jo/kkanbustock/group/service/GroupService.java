@@ -12,6 +12,7 @@ import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +27,7 @@ public class GroupService {
     private final GroupApplicationRepository groupApplicationRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional(readOnly = true)
     public List<GroupApplicationResponse> getGroupApplications() {
         return groupApplicationRepository
                 .findAll()
@@ -34,6 +36,7 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<GroupResponse> getGroups() {
         return groupRepository
                 .findAll()
@@ -42,11 +45,13 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public GroupResponse getGroup(Long kkanbuGroupPk) {
         KkanbuGroup kkanbuGroup = groupRepository.findById(kkanbuGroupPk).orElseThrow();
         return new GroupResponse(kkanbuGroup);
     }
 
+    @Transactional
     public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
         String email = groupApplicationRequest.getEmail();
         Long guestId = getGuestId(email);
@@ -73,6 +78,7 @@ public class GroupService {
         groupApplicationRepository.save(groupApplication);
     }
 
+    @Transactional
     public void changeApprovalStatus(GroupApprovalStatusRequest groupApprovalStatusRequest) {
         Long groupApplicationPk = groupApprovalStatusRequest.getGroupApplicationPk();
         boolean approvalStatus = groupApprovalStatusRequest.isApprovalStatus();
