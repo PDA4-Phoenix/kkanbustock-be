@@ -15,7 +15,7 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @GetMapping("v1/groups/application")
+    @GetMapping("v1/groups")
     public ResponseEntity<List<ReceivedGroupApplicationListResponse>> getReceivedGroupApplications(@RequestBody ReceivedGroupApplicationListRequest receivedGroupApplicationListRequest) {
         return ResponseEntity
                 .ok(groupService.getReceivedGroupApplications(receivedGroupApplicationListRequest));
@@ -27,11 +27,11 @@ public class GroupController {
                 .ok(groupService.getMyGroups(groupRequest));
     }
 
-//    @GetMapping("/v1/groups")
-//    public ResponseEntity<List<GroupResponse>> getGroups() {
-//        return ResponseEntity
-//                .ok(groupService.getGroups());
-//    }
+    @GetMapping("/v1/groups")
+    public ResponseEntity<List<GroupResponse>> getGroups() {
+        return ResponseEntity
+                .ok(groupService.getGroups());
+    }
 
     @GetMapping("/v1/groups/{groupId}")
     public ResponseEntity<GroupResponse> getGroup(
@@ -41,7 +41,7 @@ public class GroupController {
                 .ok(groupService.getGroup(groupId));
     }
 
-    @PostMapping("/v1/groups/application")
+    @PostMapping("/v1/groups")
     public void applyGroup(@RequestBody GroupApplicationRequest groupApplicationRequest) {
         groupService.applyGroup(groupApplicationRequest);
     }
