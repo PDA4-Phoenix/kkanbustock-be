@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -94,43 +93,37 @@ public class GroupService {
     }
 
     @Transactional
-    public void changeApprovalStatus(GroupApprovalStatusRequest groupApprovalStatusRequest) {
-        KkanbuGroupPK groupApplicationPk = groupApprovalStatusRequest.getGroupApplicationPk();
-        boolean approvalStatus = groupApprovalStatusRequest.isApprovalStatus();
+    public void createGroup(KkanbuGroupPK kkanbuGroupPK) {
 
-        GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
-        groupApplication.setApprovalStatus(approvalStatus);
+        GroupApplication groupApplication = groupApplicationRepository
+                .findById(kkanbuGroupPK)
+                .orElseThrow();
 
-        if (approvalStatus) {
-            createGroup(groupApplicationPk);
-            groupApplicationRepository.delete(groupApplication);
+        boolean approvalStatus = groupApplication.isApprovalStatus();
+
+        if (approvalStatus == false) {
+            Member host = groupApplication.getHost();
+            Member guest = groupApplication.getGuest();
+            String hostName = host.getNickname();
+            String guestName = guest.getNickname();
+            String name = generateGroupName();
+            float profitRate = getProfitRate();
+            LocalDateTime createdDate = LocalDateTime.now();
+
+            KkanbuGroup kkanbuGroup = KkanbuGroup
+                    .builder()
+                    .host(host)
+                    .guest(guest)
+                    .hostName(hostName)
+                    .guestName(guestName)
+                    .name(name)
+                    .profitRate(profitRate)
+                    .createdDate(createdDate)
+                    .build();
+            groupRepository.save(kkanbuGroup);
         } else {
-            groupApplicationRepository.delete(groupApplication);
+            throw new RuntimeException("이미 생성된 그룹입니다.");
         }
-    }
-
-    private void createGroup(KkanbuGroupPK groupApplicationPk) {
-        GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
-        Member host = groupApplication.getHost();
-        Member guest = groupApplication.getGuest();
-        String hostName = host.getNickname();
-        String guestName = guest.getNickname();
-        String name = generateGroupName();
-        float profitRate = getProfitRate();
-        LocalDateTime createdDate = LocalDateTime.now();
-
-        KkanbuGroup kkanbuGroup = KkanbuGroup
-                .builder()
-                .host(host)
-                .guest(guest)
-                .hostName(hostName)
-                .guestName(guestName)
-                .name(name)
-                .profitRate(profitRate)
-                .createdDate(createdDate)
-                .build();
-
-        groupRepository.save(kkanbuGroup);
     }
 
     private String generateGroupName() {
