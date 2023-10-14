@@ -27,10 +27,10 @@ public class GroupController {
                 .ok(groupService.getReceivedGroupApplications(guestId, approvalStatus));
     }
 
-    @GetMapping("/v1/groups")
-    public ResponseEntity<List<GroupResponse>> getMyGroups(@RequestBody GroupRequest groupRequest) {
+    @GetMapping("/v1/groups/{memberId}")
+    public ResponseEntity<List<GroupResponse>> getMyGroups(@PathVariable String memberId) {
         return ResponseEntity
-                .ok(groupService.getMyGroups(groupRequest));
+                .ok(groupService.getMyGroups(memberId));
     }
 
 //    @GetMapping("/v1/groups")
