@@ -67,6 +67,7 @@ public class GroupService {
         boolean approvalStatus = groupApprovalStatusRequest.isApprovalStatus();
 
         GroupApplication groupApplication = groupApplicationRepository.findById(groupApplicationPk).orElseThrow();
+        groupApplication.setApprovalStatus(approvalStatus);
 
         if (approvalStatus) {
             createGroup(groupApplicationPk);
