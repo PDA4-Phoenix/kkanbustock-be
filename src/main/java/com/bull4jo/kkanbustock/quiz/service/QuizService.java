@@ -2,12 +2,12 @@ package com.bull4jo.kkanbustock.quiz.service;
 
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
-import com.bull4jo.kkanbustock.quiz.controller.dto.DailyQuizRequest;
-import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedDailyQuizResponse;
+import com.bull4jo.kkanbustock.quiz.controller.dto.QuizRequest;
+import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedStockQuizResponse;
 import com.bull4jo.kkanbustock.quiz.domain.entity.SolvedStockQuiz;
 import com.bull4jo.kkanbustock.quiz.domain.entity.StockQuiz;
-import com.bull4jo.kkanbustock.quiz.controller.dto.QuizRequest;
-import com.bull4jo.kkanbustock.quiz.controller.dto.QuizResponse;
+import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedQuizRequest;
+import com.bull4jo.kkanbustock.quiz.controller.dto.DailyQuizResponse;
 import com.bull4jo.kkanbustock.quiz.repository.QuizRepository;
 import com.bull4jo.kkanbustock.quiz.repository.SolvedQuizRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,41 +24,28 @@ public class QuizService {
     private final MemberRepository memberRepository;
     private final SolvedQuizRepository solvedQuizRepository;
 
-    public QuizResponse getDailyQuiz(DailyQuizRequest dailyQuizRequest) {
-        Long memberId = dailyQuizRequest.getMemberId();
-
-        if (isDailyQuizSolved(memberId)) {
-            // 오늘의 퀴즈를 이미 푼 상태라면 가장 최근 SolvedStockQuiz를 불러옴
-            Long recentSolvedQuizId = getRecentSolvedQuizId(memberId);
-
-            StockQuiz stockQuiz = quizRepository.findById(recentSolvedQuizId).orElseThrow();
-            return QuizResponse.builder().stockQuiz(stockQuiz).build();
-        }
-
-        // 오늘의 퀴즈를 풀지 않았다면 해당 멤버가 풀어보지 않은 퀴즈 중 하나를 불러옴
-        Long dailyQuizId = selectDailyQuizId(memberId);
-
-        if (dailyQuizId == null) {
-            // 사용자가 모든 퀴즈를 다 풀어 본 경우
-            return null;
-        }
+    public DailyQuizResponse getDailyQuiz(QuizRequest quizRequest) {
+        Long memberId = quizRequest.getMemberId();
+        boolean isSolved = isDailyQuizSolved(memberId);
+        Long dailyQuizId = getDailyQuizId(memberId, isSolved);
 
         StockQuiz stockQuiz = quizRepository.findById(dailyQuizId).orElseThrow();
-        return QuizResponse.builder().stockQuiz(stockQuiz).build();
+        return DailyQuizResponse.builder().stockQuiz(stockQuiz).isSolved(isSolved).build();
     }
 
-    public List<QuizResponse> getQuizzes() {
-        return quizRepository
-                .findAll()
-                .stream()
-                .map(QuizResponse::new)
-                .collect(Collectors.toList());
-    }
-
-    public void saveSolvedQuiz(QuizRequest quizRequest) {
+    public SolvedStockQuizResponse getSolvedQuizzes(QuizRequest quizRequest) {
         Long memberId = quizRequest.getMemberId();
-        Long stockQuizId = quizRequest.getStockQuizId();
-        Boolean isCorrect = quizRequest.getIsCorrect();
+        List<SolvedStockQuiz> solvedStockQuizzes = getSolvedQuizzesByMemberId(memberId);
+
+        return SolvedStockQuizResponse.builder()
+                .solvedStockQuizzes(solvedStockQuizzes)
+                .build();
+    }
+
+    public void saveSolvedQuiz(SolvedQuizRequest solvedQuizRequest) {
+        Long memberId = solvedQuizRequest.getMemberId();
+        Long stockQuizId = solvedQuizRequest.getStockQuizId();
+        Boolean isCorrect = solvedQuizRequest.getIsCorrect();
         LocalDateTime solvedDate = LocalDateTime.now();
 
         Member member = memberRepository.findById(memberId).orElseThrow();
@@ -82,15 +68,24 @@ public class QuizService {
         return member.isDailyQuizSolved();
     }
 
+    private Long getDailyQuizId(Long memberId, boolean isSolved) {
+        if (isSolved) {
+            // 오늘의 퀴즈를 이미 푼 상태라면 가장 최근 SolvedStockQuizId를 불러옴
+            return getRecentSolvedQuizId(memberId);
+        }
+        // 오늘의 퀴즈를 풀지 않았다면 해당 멤버가 풀어보지 않은 퀴즈 중 하나를 불러옴
+        return getUnsolvedQuizId(memberId);
+    }
+
     private Long getRecentSolvedQuizId(Long memberId) {
-        List<SolvedStockQuiz> solvedQuizzes = solvedQuizRepository.findByMemberId(memberId);
+        List<SolvedStockQuiz> solvedQuizzes = getSolvedQuizzesByMemberId(memberId);
 
         solvedQuizzes.sort(Comparator.comparing(SolvedStockQuiz::getSolvedDate).reversed());
         return solvedQuizzes.get(0).getStockQuiz().getId();
     }
 
-    private Long selectDailyQuizId(Long memberId) {
-        List<SolvedStockQuiz> solvedQuizzes = solvedQuizRepository.findByMemberId(memberId);
+    private Long getUnsolvedQuizId(Long memberId) {
+        List<SolvedStockQuiz> solvedQuizzes = getSolvedQuizzesByMemberId(memberId);
         List<StockQuiz> quizzes = quizRepository.findAll();
         List<Long> unsolvedQuizIds = new ArrayList<>();
 
@@ -109,5 +104,10 @@ public class QuizService {
         Random random = new Random();
 
         return unsolvedQuizIds.get(random.nextInt(unsolvedQuizIds.size()));
+    }
+
+    private List<SolvedStockQuiz> getSolvedQuizzesByMemberId(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        return member.getSolvedStockQuizzes();
     }
 }
