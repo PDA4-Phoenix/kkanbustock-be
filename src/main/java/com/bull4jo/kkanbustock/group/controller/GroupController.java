@@ -53,8 +53,8 @@ public class GroupController {
     }
 
     @PostMapping("/v1/groups")
-    public void changeApprovalStatus(@RequestBody GroupApprovalStatusRequest groupApprovalStatusRequest) {
-        groupService.changeApprovalStatus(groupApprovalStatusRequest);
+    public void createGroup(@RequestBody KkanbuGroupPK kkanbuGroupPK) {
+        groupService.createGroup(kkanbuGroupPK);
     }
 
     @GetMapping("/v1/groups/profits")
