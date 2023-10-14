@@ -61,8 +61,11 @@ public class GroupService {
     }
 
     @Transactional(readOnly = true)
-    public GroupResponse getGroup(KkanbuGroupPK kkanbuGroupPk) {
-        KkanbuGroup kkanbuGroup = groupRepository.findById(kkanbuGroupPk).orElseThrow();
+    public GroupResponse getGroup(String hostId, String guestId) {
+        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
+        KkanbuGroup kkanbuGroup = groupRepository
+                .findById(kkanbuGroupPK)
+                .orElseThrow();
         return new GroupResponse(kkanbuGroup);
     }
 

@@ -39,12 +39,12 @@ public class GroupController {
 //                .ok(groupService.getGroups());
 //    }
 
-    @GetMapping("/v1/groups/{groupId}")
+    @GetMapping("/v1/groups")
     public ResponseEntity<GroupResponse> getGroup(
-            @PathVariable(value = "groupId") KkanbuGroupPK groupId
+            @RequestParam String hostId, @RequestParam String guestId
     ) {
         return ResponseEntity
-                .ok(groupService.getGroup(groupId));
+                .ok(groupService.getGroup(hostId, guestId));
     }
 
     @PostMapping("/v1/groups/application")
