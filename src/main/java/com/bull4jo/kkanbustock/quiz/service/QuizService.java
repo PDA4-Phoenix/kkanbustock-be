@@ -25,7 +25,7 @@ public class QuizService {
     private final SolvedQuizRepository solvedQuizRepository;
 
     public DailyQuizResponse getDailyQuiz(QuizRequest quizRequest) {
-        Long memberId = quizRequest.getMemberId();
+        String memberId = quizRequest.getMemberId();
         boolean isSolved = isDailyQuizSolved(memberId);
         Long dailyQuizId = getDailyQuizId(memberId, isSolved);
 
@@ -34,7 +34,7 @@ public class QuizService {
     }
 
     public SolvedStockQuizResponse getSolvedQuizzes(QuizRequest quizRequest) {
-        Long memberId = quizRequest.getMemberId();
+        String memberId = quizRequest.getMemberId();
         List<SolvedStockQuiz> solvedStockQuizzes = getSolvedQuizzesByMemberId(memberId);
 
         return SolvedStockQuizResponse.builder()
@@ -43,7 +43,7 @@ public class QuizService {
     }
 
     public void saveSolvedQuiz(SolvedQuizRequest solvedQuizRequest) {
-        Long memberId = solvedQuizRequest.getMemberId();
+        String memberId = solvedQuizRequest.getMemberId();
         Long stockQuizId = solvedQuizRequest.getStockQuizId();
         Boolean isCorrect = solvedQuizRequest.getIsCorrect();
         LocalDateTime solvedDate = LocalDateTime.now();
@@ -63,12 +63,12 @@ public class QuizService {
         member.setDailyQuizSolved(true);
     }
 
-    private boolean isDailyQuizSolved(Long memberId) {
+    private boolean isDailyQuizSolved(String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         return member.isDailyQuizSolved();
     }
 
-    private Long getDailyQuizId(Long memberId, boolean isSolved) {
+    private Long getDailyQuizId(String memberId, boolean isSolved) {
         if (isSolved) {
             // 오늘의 퀴즈를 이미 푼 상태라면 가장 최근 SolvedStockQuizId를 불러옴
             return getRecentSolvedQuizId(memberId);
@@ -77,14 +77,14 @@ public class QuizService {
         return getUnsolvedQuizId(memberId);
     }
 
-    private Long getRecentSolvedQuizId(Long memberId) {
+    private Long getRecentSolvedQuizId(String memberId) {
         List<SolvedStockQuiz> solvedQuizzes = getSolvedQuizzesByMemberId(memberId);
 
         solvedQuizzes.sort(Comparator.comparing(SolvedStockQuiz::getSolvedDate).reversed());
         return solvedQuizzes.get(0).getStockQuiz().getId();
     }
 
-    private Long getUnsolvedQuizId(Long memberId) {
+    private Long getUnsolvedQuizId(String memberId) {
         List<SolvedStockQuiz> solvedQuizzes = getSolvedQuizzesByMemberId(memberId);
         List<StockQuiz> quizzes = quizRepository.findAll();
         List<Long> unsolvedQuizIds = new ArrayList<>();
@@ -106,7 +106,7 @@ public class QuizService {
         return unsolvedQuizIds.get(random.nextInt(unsolvedQuizIds.size()));
     }
 
-    private List<SolvedStockQuiz> getSolvedQuizzesByMemberId(Long memberId) {
+    private List<SolvedStockQuiz> getSolvedQuizzesByMemberId(String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         return member.getSolvedStockQuizzes();
     }

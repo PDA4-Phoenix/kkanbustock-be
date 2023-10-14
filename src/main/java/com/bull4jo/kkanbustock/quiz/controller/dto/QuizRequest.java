@@ -6,5 +6,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class QuizRequest {
-    private final Long memberId;
+    private final String memberId;
 }

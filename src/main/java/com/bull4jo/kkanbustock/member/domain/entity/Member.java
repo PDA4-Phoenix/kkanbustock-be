@@ -13,8 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column
     private String password;
@@ -31,7 +30,7 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<SolvedStockQuiz> solvedStockQuizzes;
 
-    public Member(Long id, String password, String nickname, InvestorType investorType, boolean isDailyQuizSolved, List<SolvedStockQuiz> solvedStockQuizzes) {
+    public Member(String id, String password, String nickname, InvestorType investorType, boolean isDailyQuizSolved, List<SolvedStockQuiz> solvedStockQuizzes) {
         this.id = id;
         this.password = password;
         this.nickname = nickname;
