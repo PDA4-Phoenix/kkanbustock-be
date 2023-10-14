@@ -34,7 +34,8 @@ public class SolvedStockQuiz {
     private Boolean isCorrect;
 
     @Builder
-    public SolvedStockQuiz(Member member, StockQuiz stockQuiz, LocalDateTime solvedDate, Boolean isCorrect) {
+    public SolvedStockQuiz(Long id, Member member, StockQuiz stockQuiz, LocalDateTime solvedDate, Boolean isCorrect) {
+        this.id = id;
         this.member = member;
         this.stockQuiz = stockQuiz;
         this.solvedDate = solvedDate;

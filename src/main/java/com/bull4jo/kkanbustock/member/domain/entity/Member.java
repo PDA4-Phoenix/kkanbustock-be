@@ -25,14 +25,22 @@ public class Member {
     @Column
     private InvestorType investorType;
 
+    @Column
+    private boolean isDailyQuizSolved; // 매일 자정마다 false로 초기화 해주기
+
     @OneToMany(mappedBy = "member")
     private List<SolvedStockQuiz> solvedStockQuizzes;
 
-    public Member(Long id, String password, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes) {
+    public Member(Long id, String password, String nickname, InvestorType investorType, boolean isDailyQuizSolved, List<SolvedStockQuiz> solvedStockQuizzes) {
         this.id = id;
         this.password = password;
         this.nickname = nickname;
         this.investorType = investorType;
+        this.isDailyQuizSolved = isDailyQuizSolved;
         this.solvedStockQuizzes = solvedStockQuizzes;
+    }
+
+    public void setDailyQuizSolved(boolean dailyQuizSolved) {
+        isDailyQuizSolved = dailyQuizSolved;
     }
 }
