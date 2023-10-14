@@ -69,14 +69,11 @@ public class GroupService {
         return new GroupResponse(kkanbuGroup);
     }
 
+    // 승인 대기목록에 추가
     @Transactional
     public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
         String email = groupApplicationRequest.getEmail();
         String guestId = getGuestId(email);
-
-        if (guestId == null) {
-            throw new IllegalArgumentException("Invalid guest email: " + email);
-        }
 
         String hostId = groupApplicationRequest.getHostId();
         LocalDateTime createdDate = LocalDateTime.now();
@@ -143,11 +140,13 @@ public class GroupService {
     }
 
     private String getGuestId(String email) {
-        Member member = memberRepository.findByEmail(email);
-        if (member != null) {
-            return member.getId();
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("No Member Exists"));
+        String memberId = member.getId();
+
+        if (memberId == null) {
+            throw new IllegalArgumentException("Invalid guest email: " + email);
         }
-        return null;
+        return memberId;
     }
 
     private float getProfitRate() {
