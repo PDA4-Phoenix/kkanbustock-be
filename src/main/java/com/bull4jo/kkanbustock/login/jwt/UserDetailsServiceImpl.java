@@ -1,4 +1,4 @@
-package com.bull4jo.kkanbustock.login.utils;
+package com.bull4jo.kkanbustock.login.jwt;
 
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;

@@ -1,5 +1,7 @@
-package com.bull4jo.kkanbustock.login.utils;
+package com.bull4jo.kkanbustock.login.jwt;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,26 +15,27 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-@Component
+@Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
-    @Autowired
-    private JwtUtil jwtUtil; // JwtUtil 빈을 주입
+
+    private final JwtTokenProvider jwtTokenProvider; // JwtUtil 빈을 주입
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterchain)
             throws IOException, ServletException {
-        //헤더에서 JWT 받아옴
-        String token = jwtUtil.resolveToken((HttpServletRequest) request);
+        //Request Header 에서 JWT Token 추출
+        String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
 
-        //유효한 토큰인지 확인
-        if (token != null && jwtUtil.validateToken(token)) {
+        //validateToken 메서드로 토큰 유효성 검사
+        if (token != null && jwtTokenProvider.validateToken(token)) {
             //토큰이 유효하면 토큰으로부터 유저 정보를 받아옴
-            Authentication auth = jwtUtil.getAuthentication(token);
+            Authentication authentication  = jwtTokenProvider.getAuthentication(token);
             //SecurityContext에 Authentication 객체를 저장
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            SecurityContextHolder.getContext().setAuthentication(authentication );
         }
 
-        chain.doFilter(request, response);
+        filterchain.doFilter(request, response);
     }
 }
