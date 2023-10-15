@@ -31,10 +31,10 @@ public class QuizService {
         Long dailyQuizId;
         if (isSolved) {
             // 오늘의 퀴즈를 이미 푼 상태라면 가장 최근 SolvedStockQuizId를 불러옴
-            dailyQuizId = solvedQuizRepository.getRecentSolvedStockQuizByMemberId(memberId);
+            dailyQuizId = solvedQuizRepository.getRecentSolvedStockQuizByMemberId(memberId).get(0);
         } else {
             // 오늘의 퀴즈를 풀지 않았다면 해당 멤버가 풀어보지 않은 퀴즈 중 하나를 불러옴
-            dailyQuizId = solvedQuizRepository.getUnSolvedQuizIdByMemberId(memberId).orElseThrow();
+            dailyQuizId = solvedQuizRepository.getUnSolvedQuizIdByMemberId(memberId).orElseThrow().get(0);
         }
 
         StockQuiz stockQuiz = quizRepository.findById(dailyQuizId).orElseThrow();
