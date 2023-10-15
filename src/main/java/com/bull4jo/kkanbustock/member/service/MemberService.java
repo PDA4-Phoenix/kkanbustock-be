@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Optional;
 
 @Setter
@@ -42,7 +40,10 @@ public class MemberService {
         newMember.setEmail(email);
         newMember.setNickname(nickname);
 
+        // 새 회원 정보 저장
+        memberRepository.save(newMember);
+
         // 새 회원 정보 저장 및 반환
-        return memberRepository.save(newMember);
+        return newMember;
     }
 }

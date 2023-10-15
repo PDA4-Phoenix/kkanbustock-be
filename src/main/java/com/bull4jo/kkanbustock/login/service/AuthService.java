@@ -20,8 +20,8 @@ public class AuthService {
     public String authenticateAndGenerateToken(String id,String email, String nickname) {
         Member member = memberService.verifyAndRegisterMember(id, email, nickname);
         if (member != null) {
-            return jwtUtil.generateToken(member.getId());
+            return jwtUtil.generateToken(member.getEmail());
         }
         return null;
         }
-        }
+}

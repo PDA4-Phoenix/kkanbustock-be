@@ -20,12 +20,12 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expirationTime;
 
-    public String generateToken(String id) {
+    public String generateToken(String email) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationTime);
 
         return Jwts.builder()
-                .setSubject(id)
+                .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
