@@ -11,6 +11,7 @@ import com.bull4jo.kkanbustock.quiz.repository.QuizRepository;
 import com.bull4jo.kkanbustock.quiz.repository.SolvedQuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -23,6 +24,7 @@ public class QuizService {
     private final MemberRepository memberRepository;
     private final SolvedQuizRepository solvedQuizRepository;
 
+    @Transactional(readOnly = true)
     public DailyQuizResponse getDailyQuiz(String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         boolean isSolved = member.isDailyQuizSolved();
@@ -43,6 +45,7 @@ public class QuizService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public SolvedStockQuizResponse getSolvedQuizzes(String memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow();
         // 예외처리 필요
@@ -53,7 +56,8 @@ public class QuizService {
                 .build();
     }
 
-    public void saveSolvedQuiz(SolvedQuizRequest solvedQuizRequest) {
+    @Transactional
+    public Long saveSolvedQuiz(SolvedQuizRequest solvedQuizRequest) {
         String memberId = solvedQuizRequest.getMemberId();
         Long stockQuizId = solvedQuizRequest.getStockQuizId();
         Boolean isCorrect = solvedQuizRequest.getIsCorrect();
