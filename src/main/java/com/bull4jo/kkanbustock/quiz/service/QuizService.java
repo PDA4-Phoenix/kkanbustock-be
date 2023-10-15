@@ -44,7 +44,9 @@ public class QuizService {
     }
 
     public SolvedStockQuizResponse getSolvedQuizzes(String memberId) {
-        List<SolvedStockQuiz> solvedStockQuizzes = getSolvedQuizzesByMemberId(memberId);
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        // 예외처리 필요
+        List<SolvedStockQuiz> solvedStockQuizzes = member.getSolvedStockQuizzes();
 
         return SolvedStockQuizResponse.builder()
                 .solvedStockQuizzes(solvedStockQuizzes)
