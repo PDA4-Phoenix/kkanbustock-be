@@ -1,7 +1,8 @@
 package com.bull4jo.kkanbustock.quiz.controller;
 
-import com.bull4jo.kkanbustock.quiz.controller.dto.QuizRequest;
-import com.bull4jo.kkanbustock.quiz.controller.dto.QuizResponse;
+import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedQuizRequest;
+import com.bull4jo.kkanbustock.quiz.controller.dto.DailyQuizResponse;
+import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedStockQuizResponse;
 import com.bull4jo.kkanbustock.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,20 +17,22 @@ public class QuizController {
 
     private final QuizService quizService;
 
-    @GetMapping("/v1/quizzes")
-    public ResponseEntity<List<QuizResponse>> getQuizzes() {
-        return ResponseEntity.ok(quizService.getQuizzes());
-    }
-
-    @GetMapping("/v1/quizzes/{quizId}")
-    public ResponseEntity<QuizResponse> getQuiz(
-            @PathVariable(value = "quizId") long id
+    @GetMapping("/v1/quizzes/daily/{memberId}")
+    public ResponseEntity<DailyQuizResponse> getDailyQuiz(
+            @PathVariable String memberId
     ) {
-        return ResponseEntity.ok(quizService.getQuiz(id));
+        return ResponseEntity.ok(quizService.getDailyQuiz(memberId));
     }
 
-    @PostMapping("/v1/quizzes")
-    public void saveSolvedQuiz(@RequestBody QuizRequest quizRequest) {
-        quizService.saveSolvedQuiz(quizRequest);
+    @GetMapping("/v1/quizzes/{memberId}")
+    public ResponseEntity<SolvedStockQuizResponse> getSolvedQuizzes(
+            @PathVariable String memberId
+    ) {
+        return ResponseEntity.ok(quizService.getSolvedQuizzes(memberId));
+    }
+
+    @PostMapping("/v1/quizzes/daily")
+    public Long saveSolvedQuiz(@RequestBody SolvedQuizRequest solvedQuizRequest) {
+        return quizService.saveSolvedQuiz(solvedQuizRequest);
     }
 }
