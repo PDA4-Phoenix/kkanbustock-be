@@ -34,7 +34,7 @@ public class QuizService {
 
     public void saveSolvedQuiz(QuizRequest quizRequest) {
         // QuizRequest에서 필요한 정보 추출
-        Long memberId = quizRequest.getMemberId();
+        String memberId = quizRequest.getMemberId();
         Long stockQuizId = quizRequest.getStockQuizId();
         Date solveDate = quizRequest.getSolveDate();
         Boolean isCorrect = quizRequest.getIsCorrect();

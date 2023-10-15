@@ -3,6 +3,16 @@ spring:
     url: jdbc:mysql://phoenix-database.clemtdx79oxt.ap-northeast-2.rds.amazonaws.com:3306/kkanbustock
     username: admin
     password: phoenix123
+oauth2:
+  google:
+    client-id: 587337760758-hur61mf58hofu8ji7o4unc5qru0re474.apps.googleusercontent.com
+    client-secret: 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
+    redirect-uri: http://localhost:8080/login/oauth2/code/google
+    token-uri: https://oauth2.googleapis.com/token
+    resource-uri: https://www.googleapis.com/oauth2/v2/userinfo
+
+
+
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
