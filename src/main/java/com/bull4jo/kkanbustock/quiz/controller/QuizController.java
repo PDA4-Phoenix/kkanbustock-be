@@ -25,7 +25,7 @@ public class QuizController {
     }
 
     @GetMapping("/v1/quizzes/{memberId}")
-    public ResponseEntity<SolvedStockQuizResponse> getSolvedQuizzes(
+    public ResponseEntity<List<SolvedStockQuizResponse>> getSolvedQuizzes(
             @PathVariable String memberId
     ) {
         return ResponseEntity.ok(quizService.getSolvedQuizzes(memberId));

@@ -10,11 +10,14 @@ import java.util.List;
 
 @Getter
 public class SolvedStockQuizResponse {
-    private final List<SolvedStockQuiz> solvedStockQuizzes;
+    private final String content;
+    private final String answer;
+    private final String explanation;
 
     @Builder
-    public SolvedStockQuizResponse(List<SolvedStockQuiz> solvedStockQuizzes) {
-        this.solvedStockQuizzes = solvedStockQuizzes;
+    public SolvedStockQuizResponse(StockQuiz stockQuiz) {
+        this.content = stockQuiz.getContent();
+        this.answer = stockQuiz.getAnswer();
+        this.explanation = stockQuiz.getExplanation();
     }
-
 }

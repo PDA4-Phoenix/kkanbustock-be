@@ -13,6 +13,6 @@ public interface SolvedQuizRepository extends JpaRepository<SolvedStockQuiz, Lon
     @Query("SELECT q.stockQuiz.id FROM SolvedStockQuiz q WHERE q.member.id = :memberId ORDER BY q.solvedDate DESC")
     List<Long> getRecentSolvedStockQuizByMemberId(String memberId);
 
-    @Query("SELECT q.id FROM StockQuiz q LEFT OUTER JOIN SolvedStockQuiz sq WHERE sq.member.id = :memberId")
+    @Query("SELECT q.id FROM StockQuiz q LEFT JOIN SolvedStockQuiz sq ON q.id = sq.stockQuiz.id AND sq.member.id = :memberId WHERE sq.stockQuiz.id IS NULL")
     Optional<List<Long>> getUnSolvedQuizIdByMemberId(String memberId);
 }
