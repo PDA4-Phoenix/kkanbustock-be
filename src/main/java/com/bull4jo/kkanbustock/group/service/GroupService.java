@@ -60,15 +60,6 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public GroupResponse getGroup(String hostId, String guestId) {
-        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
-        KkanbuGroup kkanbuGroup = groupRepository
-                .findById(kkanbuGroupPK)
-                .orElseThrow();
-        return new GroupResponse(kkanbuGroup);
-    }
-
     // 승인 대기목록에 추가
     @Transactional
     public void applyGroup(GroupApplicationRequest groupApplicationRequest) {

@@ -41,14 +41,6 @@ public class GroupController {
                 .ok(groupService.getGroups());
     }
 
-//    @GetMapping("/v1/groups")
-//    public ResponseEntity<GroupResponse> getGroup(
-//            @RequestParam String hostId, @RequestParam String guestId
-//    ) {
-//        return ResponseEntity
-//                .ok(groupService.getGroup(hostId, guestId));
-//    }
-
     @PostMapping("/v1/groups/application")
     public void applyGroup(@RequestBody GroupApplicationRequest groupApplicationRequest) {
         groupService.applyGroup(groupApplicationRequest);
