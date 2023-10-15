@@ -23,7 +23,7 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @GetMapping("v1/groups/application")
+    @GetMapping("v1/groups/proposal")
     public ResponseEntity<List<ReceivedGroupApplicationListResponse>> getReceivedGroupApplications(@RequestParam final String guestId, @RequestParam final boolean approvalStatus) {
         return ResponseEntity
                 .ok(groupService.getReceivedGroupApplications(guestId, approvalStatus));
@@ -41,7 +41,7 @@ public class GroupController {
                 .ok(groupService.getGroups());
     }
 
-    @PostMapping("/v1/groups/application")
+    @PostMapping("/v1/groups/proposal")
     public void applyGroup(@RequestBody GroupApplicationRequest groupApplicationRequest) {
         groupService.applyGroup(groupApplicationRequest);
     }
