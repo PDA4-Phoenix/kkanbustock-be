@@ -24,11 +24,23 @@ public class QuizService {
     private final SolvedQuizRepository solvedQuizRepository;
 
     public DailyQuizResponse getDailyQuiz(String memberId) {
-        boolean isSolved = isDailyQuizSolved(memberId);
-        Long dailyQuizId = getDailyQuizId(memberId, isSolved);
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        boolean isSolved = member.isDailyQuizSolved();
+        Long dailyQuizId;
+        if (isSolved) {
+            // 오늘의 퀴즈를 이미 푼 상태라면 가장 최근 SolvedStockQuizId를 불러옴
+            dailyQuizId = solvedQuizRepository.getRecentSolvedStockQuizByMemberId(memberId);
+        } else {
+            // 오늘의 퀴즈를 풀지 않았다면 해당 멤버가 풀어보지 않은 퀴즈 중 하나를 불러옴
+            dailyQuizId = solvedQuizRepository.getUnSolvedQuizIdByMemberId(memberId).orElseThrow();
+        }
 
         StockQuiz stockQuiz = quizRepository.findById(dailyQuizId).orElseThrow();
-        return DailyQuizResponse.builder().stockQuiz(stockQuiz).isSolved(isSolved).build();
+        return DailyQuizResponse
+                .builder()
+                .stockQuiz(stockQuiz)
+                .isSolved(isSolved)
+                .build();
     }
 
     public SolvedStockQuizResponse getSolvedQuizzes(String memberId) {
