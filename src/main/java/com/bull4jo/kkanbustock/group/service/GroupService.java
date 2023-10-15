@@ -2,6 +2,7 @@ package com.bull4jo.kkanbustock.group.service;
 
 import com.bull4jo.kkanbustock.group.controller.dto.*;
 import com.bull4jo.kkanbustock.group.domain.entity.GroupApplication;
+import com.bull4jo.kkanbustock.group.domain.entity.GroupNameGenerator;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroup;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroupPK;
 import com.bull4jo.kkanbustock.group.repository.GroupApplicationRepository;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +26,7 @@ public class GroupService {
     private final GroupApplicationRepository groupApplicationRepository;
     private final MemberRepository memberRepository;
     private final PortfolioRepository portfolioRepository;
+    private final GroupNameGenerator groupNameGenerator;
 
     @Transactional(readOnly = true)
     public List<ReceivedGroupApplicationListResponse> getReceivedGroupApplications(final String guestId, final boolean approvalStatus) {
@@ -101,12 +102,12 @@ public class GroupService {
 
         boolean approvalStatus = groupApplication.isApprovalStatus();
 
-        if (approvalStatus == false) {
+        if (!approvalStatus) {
             Member host = groupApplication.getHost();
             Member guest = groupApplication.getGuest();
             String hostName = host.getNickname();
             String guestName = guest.getNickname();
-            String name = generateGroupName();
+            String name = groupNameGenerator.generateGroupName();
             float profitRate = getGroupProfitRate(kkanbuGroupPK);
             LocalDateTime createdDate = LocalDateTime.now();
 
@@ -126,12 +127,6 @@ public class GroupService {
         }
     }
 
-    private String generateGroupName() {
-        // 그룹 이름을 만들어주는 로직
-        // 임시로 리턴
-        return "test";
-    }
-
     private String getGuestId(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("No Member Exists"));
         String memberId = member.getId();
@@ -142,16 +137,6 @@ public class GroupService {
         return memberId;
     }
 
-    private float getProfitRate() {
-        // 수익률을 계산하는 로직
-        // 임시로 리턴
-        return 100;
-    }
-
-    private boolean isGroupNameExists(String name) {
-        Optional<KkanbuGroup> existingGroupName = groupRepository.findByName(name);
-        return existingGroupName.isPresent(); // 값이 있다면 true
-    }
     public float getGroupProfitRate(KkanbuGroupPK kkanbuGroupPK) {
         Float hostTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getHostId());
         Float hostTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getHostId());

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,19 +35,19 @@ public class GroupController {
                 .ok(groupService.getMyGroups(memberId));
     }
 
-//    @GetMapping("/v1/groups")
-//    public ResponseEntity<List<GroupResponse>> getGroups() {
-//        return ResponseEntity
-//                .ok(groupService.getGroups());
-//    }
-
     @GetMapping("/v1/groups")
-    public ResponseEntity<GroupResponse> getGroup(
-            @RequestParam String hostId, @RequestParam String guestId
-    ) {
+    public ResponseEntity<List<GroupResponse>> getGroups() {
         return ResponseEntity
-                .ok(groupService.getGroup(hostId, guestId));
+                .ok(groupService.getGroups());
     }
+
+//    @GetMapping("/v1/groups")
+//    public ResponseEntity<GroupResponse> getGroup(
+//            @RequestParam String hostId, @RequestParam String guestId
+//    ) {
+//        return ResponseEntity
+//                .ok(groupService.getGroup(hostId, guestId));
+//    }
 
     @PostMapping("/v1/groups/application")
     public void applyGroup(@RequestBody GroupApplicationRequest groupApplicationRequest) {
@@ -53,7 +55,7 @@ public class GroupController {
     }
 
     @PostMapping("/v1/groups")
-    public void createGroup(@RequestBody KkanbuGroupPK kkanbuGroupPK) {
+    public void createGroup(@RequestBody KkanbuGroupPK kkanbuGroupPK) throws NoSuchAlgorithmException, IOException {
         groupService.createGroup(kkanbuGroupPK);
     }
 
