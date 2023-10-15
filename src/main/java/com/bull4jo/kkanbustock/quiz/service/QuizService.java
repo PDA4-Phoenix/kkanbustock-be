@@ -2,7 +2,6 @@ package com.bull4jo.kkanbustock.quiz.service;
 
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
-import com.bull4jo.kkanbustock.quiz.controller.dto.QuizRequest;
 import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedStockQuizResponse;
 import com.bull4jo.kkanbustock.quiz.domain.entity.SolvedStockQuiz;
 import com.bull4jo.kkanbustock.quiz.domain.entity.StockQuiz;
@@ -24,8 +23,7 @@ public class QuizService {
     private final MemberRepository memberRepository;
     private final SolvedQuizRepository solvedQuizRepository;
 
-    public DailyQuizResponse getDailyQuiz(QuizRequest quizRequest) {
-        String memberId = quizRequest.getMemberId();
+    public DailyQuizResponse getDailyQuiz(String memberId) {
         boolean isSolved = isDailyQuizSolved(memberId);
         Long dailyQuizId = getDailyQuizId(memberId, isSolved);
 
@@ -33,8 +31,7 @@ public class QuizService {
         return DailyQuizResponse.builder().stockQuiz(stockQuiz).isSolved(isSolved).build();
     }
 
-    public SolvedStockQuizResponse getSolvedQuizzes(QuizRequest quizRequest) {
-        String memberId = quizRequest.getMemberId();
+    public SolvedStockQuizResponse getSolvedQuizzes(String memberId) {
         List<SolvedStockQuiz> solvedStockQuizzes = getSolvedQuizzesByMemberId(memberId);
 
         return SolvedStockQuizResponse.builder()

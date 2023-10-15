@@ -1,6 +1,5 @@
 package com.bull4jo.kkanbustock.quiz.controller;
 
-import com.bull4jo.kkanbustock.quiz.controller.dto.QuizRequest;
 import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedQuizRequest;
 import com.bull4jo.kkanbustock.quiz.controller.dto.DailyQuizResponse;
 import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedStockQuizResponse;
@@ -18,18 +17,18 @@ public class QuizController {
 
     private final QuizService quizService;
 
-    @GetMapping("/v1/quizzes/daily")
+    @GetMapping("/v1/quizzes/daily/{memberId}")
     public ResponseEntity<DailyQuizResponse> getDailyQuiz(
-            @RequestBody QuizRequest quizRequest
+            @PathVariable String memberId
     ) {
-        return ResponseEntity.ok(quizService.getDailyQuiz(quizRequest));
+        return ResponseEntity.ok(quizService.getDailyQuiz(memberId));
     }
 
-    @GetMapping("/v1/quizzes")
+    @GetMapping("/v1/quizzes/{memberId}")
     public ResponseEntity<SolvedStockQuizResponse> getSolvedQuizzes(
-            @RequestBody QuizRequest quizRequest
+            @PathVariable String memberId
     ) {
-        return ResponseEntity.ok(quizService.getSolvedQuizzes(quizRequest));
+        return ResponseEntity.ok(quizService.getSolvedQuizzes(memberId));
     }
 
     @PostMapping("/v1/quizzes/daily")
