@@ -60,8 +60,12 @@ public class QuizService {
         LocalDateTime solvedDate = LocalDateTime.now();
 
         Member member = memberRepository.findById(memberId).orElseThrow();
-        StockQuiz stockQuiz = quizRepository.findById(stockQuizId).orElseThrow();
+        if (member.isDailyQuizSolved()) {
+            // 나중에 변경해주세요
+            throw new RuntimeException("이미 데일리 퀴즈 플었습니다.");
+        }
 
+        StockQuiz stockQuiz = quizRepository.findById(stockQuizId).orElseThrow();
         SolvedStockQuiz solvedStockQuiz = SolvedStockQuiz
                 .builder()
                 .member(member)
@@ -72,53 +76,8 @@ public class QuizService {
 
         solvedQuizRepository.save(solvedStockQuiz);
         member.setDailyQuizSolved(true);
+
+        return stockQuizId;
     }
 
-    private boolean isDailyQuizSolved(String memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
-        return member.isDailyQuizSolved();
-    }
-
-    private Long getDailyQuizId(String memberId, boolean isSolved) {
-        if (isSolved) {
-            // 오늘의 퀴즈를 이미 푼 상태라면 가장 최근 SolvedStockQuizId를 불러옴
-            return getRecentSolvedQuizId(memberId);
-        }
-        // 오늘의 퀴즈를 풀지 않았다면 해당 멤버가 풀어보지 않은 퀴즈 중 하나를 불러옴
-        return getUnsolvedQuizId(memberId);
-    }
-
-    private Long getRecentSolvedQuizId(String memberId) {
-        List<SolvedStockQuiz> solvedQuizzes = getSolvedQuizzesByMemberId(memberId);
-
-        solvedQuizzes.sort(Comparator.comparing(SolvedStockQuiz::getSolvedDate).reversed());
-        return solvedQuizzes.get(0).getStockQuiz().getId();
-    }
-
-    private Long getUnsolvedQuizId(String memberId) {
-        List<SolvedStockQuiz> solvedQuizzes = getSolvedQuizzesByMemberId(memberId);
-        List<StockQuiz> quizzes = quizRepository.findAll();
-        List<Long> unsolvedQuizIds = new ArrayList<>();
-
-        for (StockQuiz quiz : quizzes) {
-            Long quizId = quiz.getId();
-            boolean isSolved = solvedQuizzes.stream().anyMatch(solvedQuiz -> solvedQuiz.getStockQuiz().getId().equals(quizId));
-            if (!isSolved) {
-                unsolvedQuizIds.add(quizId);
-            }
-        }
-
-        if (unsolvedQuizIds.isEmpty()) {
-            return null;
-        }
-
-        Random random = new Random();
-
-        return unsolvedQuizIds.get(random.nextInt(unsolvedQuizIds.size()));
-    }
-
-    private List<SolvedStockQuiz> getSolvedQuizzesByMemberId(String memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
-        return member.getSolvedStockQuizzes();
-    }
 }

@@ -32,7 +32,7 @@ public class QuizController {
     }
 
     @PostMapping("/v1/quizzes/daily")
-    public void saveSolvedQuiz(@RequestBody SolvedQuizRequest solvedQuizRequest) {
-        quizService.saveSolvedQuiz(solvedQuizRequest);
+    public Long saveSolvedQuiz(@RequestBody SolvedQuizRequest solvedQuizRequest) {
+        return quizService.saveSolvedQuiz(solvedQuizRequest);
     }
 }
