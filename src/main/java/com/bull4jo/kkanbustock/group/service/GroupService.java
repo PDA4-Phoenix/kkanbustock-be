@@ -13,6 +13,7 @@ import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -137,12 +138,16 @@ public class GroupService {
         }
     }
 
+    @Scheduled (cron = "0 3 2 * * *")
     @Transactional
     public void updateGroupProfitRate() {
         List<KkanbuGroup> groups = groupRepository.findAll();
         for (KkanbuGroup group : groups) {
             group.setProfitRate(getGroupProfitRate(group.getHost().getId(), group.getGuest().getId()));
         }
+
+        // 메서드 실행 시작 로그
+        System.out.println("updateGroupProfitRate() 메서드가 실행됩니다.");
     }
 
     public float getGroupProfitRate(String hostId, String guestId) {

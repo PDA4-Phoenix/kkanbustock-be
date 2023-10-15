@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +30,14 @@ public class StockService {
                 .getSrtnCd();
     }
 
+    @Scheduled(cron = "0 0 2 * * *")
     @Transactional
     public void setInit() {
         OkHttpClient client = new OkHttpClient().newBuilder().build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
+
+        // 메서드 실행 시작 로그
+        System.out.println("setInit() 메서드가 실행됩니다.");
 
         urlBuilder.addQueryParameter("serviceKey", authKey);
         urlBuilder.addQueryParameter("resultType", "json");
