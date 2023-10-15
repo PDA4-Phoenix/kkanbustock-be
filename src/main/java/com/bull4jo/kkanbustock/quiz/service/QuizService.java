@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,14 +47,13 @@ public class QuizService {
     }
 
     @Transactional(readOnly = true)
-    public SolvedStockQuizResponse getSolvedQuizzes(String memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
-        // 예외처리 필요
-        List<SolvedStockQuiz> solvedStockQuizzes = member.getSolvedStockQuizzes();
-
-        return SolvedStockQuizResponse.builder()
-                .solvedStockQuizzes(solvedStockQuizzes)
-                .build();
+    public List<SolvedStockQuizResponse> getSolvedQuizzes(String memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(); // 예외처리 필요
+        List<StockQuiz> solvedStockQuizzes = quizRepository.getSolvedStockQuizByMemberId(memberId).orElseThrow();
+        return solvedStockQuizzes
+                .stream()
+                .map(SolvedStockQuizResponse::new)
+                .collect(Collectors.toList());
     }
 
     @Transactional
