@@ -34,6 +34,9 @@ public class Member {
     @Column
     private float profitRate;
 
+    @Column
+    private boolean isDailyQuizSolved; // 매일 자정마다 false로 초기화 해주기
+
     @OneToMany(mappedBy = "member")
     private List<SolvedStockQuiz> solvedStockQuizzes;
 
@@ -52,11 +55,12 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Portfolio> portfolios;
 
-    public Member(String id, String email, String password, String nickname, InvestorType investorType, List<SolvedStockQuiz> solvedStockQuizzes, List<KkanbuGroup> hostKkanbuGroups, List<KkanbuGroup> guestKkanbuGroups, List<GroupApplication> sentGroupApplications, List<GroupApplication> receivedGroupApplications) {
+    public Member(String id, String email, String password, String nickname, InvestorType investorType, boolean isDailyQuizSolved, List<SolvedStockQuiz> solvedStockQuizzes, List<KkanbuGroup> hostKkanbuGroups, List<KkanbuGroup> guestKkanbuGroups, List<GroupApplication> sentGroupApplications, List<GroupApplication> receivedGroupApplications) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.investorType = investorType;
+        this.isDailyQuizSolved = isDailyQuizSolved;
         this.solvedStockQuizzes = solvedStockQuizzes;
         this.hostKkanbuGroups = hostKkanbuGroups;
         this.guestKkanbuGroups = guestKkanbuGroups;
@@ -75,4 +79,8 @@ public class Member {
         this.profitRate = (totalEquitiesValue / totalPurchaseAmount - 1) * 100;
     }
 
+
+    public void setDailyQuizSolved(boolean dailyQuizSolved) {
+        isDailyQuizSolved = dailyQuizSolved;
+    }
 }
