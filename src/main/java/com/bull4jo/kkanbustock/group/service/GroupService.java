@@ -107,7 +107,7 @@ public class GroupService {
             String hostName = host.getNickname();
             String guestName = guest.getNickname();
             String name = generateGroupName();
-            float profitRate = getProfitRate();
+            float profitRate = getGroupProfitRate(kkanbuGroupPK);
             LocalDateTime createdDate = LocalDateTime.now();
 
             KkanbuGroup kkanbuGroup = KkanbuGroup

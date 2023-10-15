@@ -14,6 +14,6 @@ import java.util.Optional;
 public interface GroupRepository extends JpaRepository<KkanbuGroup, KkanbuGroupPK> {
     Optional<KkanbuGroup> findByName(String name);
 
-    @Query("SELECT '*' FROM KkanbuGroup p WHERE p.host.id = :memberId OR p.guest.id = :memberId")
+    @Query("SELECT p FROM KkanbuGroup p WHERE p.host.id = :memberId OR p.guest.id = :memberId")
     Optional<List<KkanbuGroup>> findAllByHostIdOrGuestId(String memberId);
 }
