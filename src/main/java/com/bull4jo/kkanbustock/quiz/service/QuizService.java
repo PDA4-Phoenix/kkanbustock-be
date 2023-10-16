@@ -12,6 +12,8 @@ import com.bull4jo.kkanbustock.quiz.controller.dto.DailyQuizResponse;
 import com.bull4jo.kkanbustock.quiz.repository.QuizRepository;
 import com.bull4jo.kkanbustock.quiz.repository.SolvedQuizRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,12 +54,15 @@ public class QuizService {
     }
 
     @Transactional(readOnly = true)
-    public List<SolvedStockQuizResponse> getSolvedQuizzes(String memberId) {
+    public List<SolvedStockQuizResponse> getSolvedQuizzes(String memberId, Pageable pageable) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        List<SolvedStockQuiz> solvedStockQuizzes = member.getSolvedStockQuizzes();
+        // List<SolvedStockQuiz> solvedStockQuizzes = member.getSolvedStockQuizzes();
+        Page<SolvedStockQuiz> solvedStockQuizPage = member.getSolvedStockQuizzes();
 
-        return solvedStockQuizzes.stream()
+        return solvedStockQuizPage
+                .getContent()
+                .stream()
                 .map(solvedStockQuiz ->
                         SolvedStockQuizResponse.builder()
                                 .stockQuiz(solvedStockQuiz.getStockQuiz())

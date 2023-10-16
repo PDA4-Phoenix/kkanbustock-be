@@ -5,6 +5,7 @@ import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.portfolio.domain.Portfolio;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PortfolioRepository portfolioRepository;
 
+
+    @Scheduled (cron = "0 2 2 * * *")
     @Transactional
     public void updateMemberProfitRate() {
         float totalPurchaseAmount = 0;
@@ -31,5 +34,9 @@ public class MemberService {
             float profitRate = (totalEquities / purchaseAmount - 1) * 100;
             member.setProfitRate(profitRate);
         }
+
+        // 메서드 실행 시작 로그
+        System.out.println("updateMemberProfitRate() 메서드가 실행됩니다.");
+
     }
 }

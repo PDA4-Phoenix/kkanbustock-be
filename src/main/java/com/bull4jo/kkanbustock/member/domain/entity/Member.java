@@ -8,11 +8,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import javax.swing.*;
 import java.util.List;
 
+@Slf4j
 @Entity
 @Table
 @Getter
@@ -30,7 +34,8 @@ public class Member {
     private String nickname;
 
     @Column
-    private InvestorType investorType;
+    private InvestorType
+            investorType;
     @Column
     private float profitRate;
 
@@ -68,9 +73,27 @@ public class Member {
         this.receivedGroupApplications = receivedGroupApplications;
     }
 
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정마다 실행
+    public void resetDailyQuizSolved() {
+        // 매일 자정마다 isDailyQuizSolved 변수를 false로 초기화
+        isDailyQuizSolved = false;
+    }
+
+    public void calculateTotalProfit() {
+        float totalPurchaseAmount = 0;
+        float totalEquitiesValue = 0;
+        for (Portfolio portfolio : portfolios) {
+            totalPurchaseAmount += portfolio.getPurchaseAmount();
+            totalEquitiesValue += portfolio.getEquitiesValue();
+        }
+        // 0 예외 처리
+        this.profitRate = (totalEquitiesValue / totalPurchaseAmount - 1) * 100;
+    }
+
     public void setProfitRate(float profitRate) {
         this.profitRate = profitRate;
     }
+
 
 
     public void setDailyQuizSolved(boolean dailyQuizSolved) {
