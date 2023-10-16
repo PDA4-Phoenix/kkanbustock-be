@@ -39,6 +39,10 @@ public class KkanbuGroup {
     @Column(nullable = false)
     private LocalDateTime createdDate;
 
+
+    public void setProfitRate(float profitRate) {
+        this.profitRate = profitRate;
+    }
     @Builder
     public KkanbuGroup(KkanbuGroupPK kkanbuGroupPK, Member host, Member guest, String hostName, String guestName, float profitRate, String name, LocalDateTime createdDate) {
         this.kkanbuGroupPK = kkanbuGroupPK;
