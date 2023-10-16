@@ -68,12 +68,8 @@ public class GroupService {
         LocalDateTime createdDate = LocalDateTime.now();
 
         Member guest = memberRepository.findByEmail(email).orElseThrow();
-//        System.out.println(guest.getId());
         Member host = memberRepository.findById(hostId).orElseThrow();
-//        System.out.println(host.getId());
-
         String hostName = host.getNickname();
-//        System.out.println(hostName);
 
         KkanbuGroupPK groupApplicationPk = KkanbuGroupPK
                 .builder()
@@ -111,12 +107,6 @@ public class GroupService {
             float profitRate = getGroupProfitRate(kkanbuGroupPK);
             LocalDateTime createdDate = LocalDateTime.now();
 
-            KkanbuGroupPK groupApplicationPk = KkanbuGroupPK
-                    .builder()
-                    .hostId(host.getId())
-                    .guestId(guest.getId())
-                    .build();
-
             KkanbuGroup kkanbuGroup = KkanbuGroup
                     .builder()
                     .kkanbuGroupPK(kkanbuGroupPK)
@@ -134,16 +124,6 @@ public class GroupService {
             throw new RuntimeException("이미 생성된 그룹입니다.");
         }
     }
-
-//    private String getGuestId(String email) {
-//        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("No Member Exists"));
-//        String memberId = member.getId();
-//
-//        if (memberId == null) {
-//            throw new IllegalArgumentException("Invalid guest email: " + email);
-//        }
-//        return memberId;
-//    }
 
     public float getGroupProfitRate(KkanbuGroupPK kkanbuGroupPK) {
         Float hostTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getHostId());
