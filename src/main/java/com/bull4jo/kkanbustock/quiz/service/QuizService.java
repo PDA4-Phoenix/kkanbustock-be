@@ -29,7 +29,7 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public DailyQuizResponse getDailyQuiz(String memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         boolean isSolved = member.isDailyQuizSolved();
         Long dailyQuizId;
         if (isSolved) {
@@ -75,7 +75,7 @@ public class QuizService {
             throw new CustomException(ErrorCode.DAILY_QUIZ_FORBIDDEN);
         }
 
-        StockQuiz stockQuiz = quizRepository.findById(stockQuizId).orElseThrow();
+        StockQuiz stockQuiz = quizRepository.findById(stockQuizId).orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
         SolvedStockQuiz solvedStockQuiz = SolvedStockQuiz
                 .builder()
                 .member(member)
