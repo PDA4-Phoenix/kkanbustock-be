@@ -1,5 +1,7 @@
 package com.bull4jo.kkanbustock.quiz.service;
 
+import com.bull4jo.kkanbustock.exception.CustomException;
+import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedStockQuizResponse;
@@ -32,13 +34,16 @@ public class QuizService {
         Long dailyQuizId;
         if (isSolved) {
             // 오늘의 퀴즈를 이미 푼 상태라면 가장 최근 SolvedStockQuizId를 불러옴
-            dailyQuizId = solvedQuizRepository.getRecentSolvedStockQuizByMemberId(memberId).get(0);
+            dailyQuizId = solvedQuizRepository.getRecentSolvedStockQuizByMemberId(memberId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.SOLVED_QUIZ_NOT_FOUND)).get(0);
         } else {
             // 오늘의 퀴즈를 풀지 않았다면 해당 멤버가 풀어보지 않은 퀴즈 중 하나를 불러옴
-            dailyQuizId = solvedQuizRepository.getUnSolvedQuizIdByMemberId(memberId).orElseThrow().get(0);
+            dailyQuizId = solvedQuizRepository.getUnSolvedQuizIdByMemberId(memberId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.UNSOLVED_QUIZ_NOT_FOUND)).get(0);
         }
 
-        StockQuiz stockQuiz = quizRepository.findById(dailyQuizId).orElseThrow();
+        StockQuiz stockQuiz = quizRepository.findById(dailyQuizId)
+                .orElseThrow(() -> new CustomException(ErrorCode.QUIZ_NOT_FOUND));
         return DailyQuizResponse
                 .builder()
                 .stockQuiz(stockQuiz)
@@ -48,8 +53,7 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public List<SolvedStockQuizResponse> getSolvedQuizzes(String memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(); // 예외처리 필요
-        List<StockQuiz> solvedStockQuizzes = quizRepository.getSolvedStockQuizByMemberId(memberId).orElseThrow();
+        List<StockQuiz> solvedStockQuizzes = quizRepository.getSolvedStockQuizByMemberId(memberId).orElseThrow(() -> new CustomException(ErrorCode.SOLVED_QUIZ_NOT_FOUND));
         return solvedStockQuizzes
                 .stream()
                 .map(SolvedStockQuizResponse::new)
@@ -63,10 +67,9 @@ public class QuizService {
         Boolean isCorrect = solvedQuizRequest.getIsCorrect();
         LocalDateTime solvedDate = LocalDateTime.now();
 
-        Member member = memberRepository.findById(memberId).orElseThrow();
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         if (member.isDailyQuizSolved()) {
-            // 나중에 변경해주세요
-            throw new RuntimeException("이미 데일리 퀴즈 플었습니다.");
+            throw new CustomException(ErrorCode.DAILY_QUIZ_FORBIDDEN);
         }
 
         StockQuiz stockQuiz = quizRepository.findById(stockQuizId).orElseThrow();

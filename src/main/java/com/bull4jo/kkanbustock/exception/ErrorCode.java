@@ -17,6 +17,8 @@ public enum ErrorCode {
     /*
      * 403 Forbidden: 승인을 거부함
      */
+    DAILY_QUIZ_FORBIDDEN(HttpStatus.FORBIDDEN, "오늘의 퀴즈를 이미 풀었습니다."),
+
     GROUP_APPLICATION_FORBIDDEN(HttpStatus.FORBIDDEN, "같은 깐부 신청이 존재합니다."),
     GROUP_FORBIDDEN(HttpStatus.FORBIDDEN, "이미 깐부 관계입니다."),
 
@@ -24,8 +26,12 @@ public enum ErrorCode {
      * 404 NOT_FOUND: 리소스를 찾을 수 없음
      */
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "멤버 정보를 찾을 수 없습니다."),
+
+    QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "퀴즈 정보를 찾을 수 없습니다."),
+    UNSOLVED_QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "풀지 않은 퀴즈 정보를 찾을 수 없습니다."),
     SOLVED_QUIZ_NOT_FOUND(HttpStatus.NOT_FOUND, "푼 퀴즈 정보를 찾을 수 없습니다."),
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "깐부 정보를 찾을 수 없습니다."),
+
     GROUP_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "받은 깐부 신청을 찾을 수 없습니다."),
     MY_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "내 깐부 정보를 찾을 수 없습니다"),
 
