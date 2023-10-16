@@ -137,6 +137,14 @@ public class GroupService {
         }
     }
 
+    @Transactional
+    public void updateGroupProfitRate() {
+        List<KkanbuGroup> groups = groupRepository.findAll();
+        for (KkanbuGroup group : groups) {
+            group.setProfitRate(getGroupProfitRate(group.getHost().getId(), group.getGuest().getId()));
+        }
+    }
+
     public float getGroupProfitRate(String hostId, String guestId) {
         KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
 
