@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class GroupController {
 
     private final GroupService groupService;
 
-    @GetMapping("v1/groups/application")
+    @GetMapping("v1/groups/proposal")
     public ResponseEntity<List<ReceivedGroupApplicationListResponse>> getReceivedGroupApplications(@RequestParam final String guestId, @RequestParam final boolean approvalStatus) {
         return ResponseEntity
                 .ok(groupService.getReceivedGroupApplications(guestId, approvalStatus));
@@ -41,26 +39,19 @@ public class GroupController {
                 .ok(groupService.getGroups());
     }
 
-//    @GetMapping("/v1/groups")
-//    public ResponseEntity<GroupResponse> getGroup(
-//            @RequestParam String hostId, @RequestParam String guestId
-//    ) {
-//        return ResponseEntity
-//                .ok(groupService.getGroup(hostId, guestId));
-//    }
-
-    @PostMapping("/v1/groups/application")
+    @PostMapping("/v1/groups/proposal")
     public void applyGroup(@RequestBody GroupApplicationRequest groupApplicationRequest) {
         groupService.applyGroup(groupApplicationRequest);
     }
 
     @PostMapping("/v1/groups")
-    public void createGroup(@RequestBody KkanbuGroupPK kkanbuGroupPK) throws NoSuchAlgorithmException, IOException {
+    public void createGroup(@RequestBody KkanbuGroupPK kkanbuGroupPK) {
         groupService.createGroup(kkanbuGroupPK);
     }
 
     @GetMapping("/v1/groups/profits")
-    public float getGroupProfitRate(@RequestParam KkanbuGroupPK kkanbuGroupPK) {
+    public float getGroupProfitRate(@RequestParam String hostId, @RequestParam String guestId) {
+        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
         return groupService.getGroupProfitRate(kkanbuGroupPK);
     }
 }

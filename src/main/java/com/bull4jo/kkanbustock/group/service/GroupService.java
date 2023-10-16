@@ -60,30 +60,26 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public GroupResponse getGroup(String hostId, String guestId) {
-        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
-        KkanbuGroup kkanbuGroup = groupRepository
-                .findById(kkanbuGroupPK)
-                .orElseThrow();
-        return new GroupResponse(kkanbuGroup);
-    }
-
     // 승인 대기목록에 추가
     @Transactional
     public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
         String email = groupApplicationRequest.getEmail();
-        String guestId = getGuestId(email);
-
         String hostId = groupApplicationRequest.getHostId();
         LocalDateTime createdDate = LocalDateTime.now();
 
+        Member guest = memberRepository.findByEmail(email).orElseThrow();
         Member host = memberRepository.findById(hostId).orElseThrow();
-        Member guest = memberRepository.findById(guestId).orElseThrow();
         String hostName = host.getNickname();
+
+        KkanbuGroupPK groupApplicationPk = KkanbuGroupPK
+                .builder()
+                .hostId(host.getId())
+                .guestId(guest.getId())
+                .build();
 
         GroupApplication groupApplication = GroupApplication
                 .builder()
+                .groupApplicationPk(groupApplicationPk)
                 .host(host)
                 .guest(guest)
                 .hostName(hostName)
@@ -113,6 +109,7 @@ public class GroupService {
 
             KkanbuGroup kkanbuGroup = KkanbuGroup
                     .builder()
+                    .kkanbuGroupPK(kkanbuGroupPK)
                     .host(host)
                     .guest(guest)
                     .hostName(hostName)
@@ -121,20 +118,11 @@ public class GroupService {
                     .profitRate(profitRate)
                     .createdDate(createdDate)
                     .build();
+
             groupRepository.save(kkanbuGroup);
         } else {
             throw new RuntimeException("이미 생성된 그룹입니다.");
         }
-    }
-
-    private String getGuestId(String email) {
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("No Member Exists"));
-        String memberId = member.getId();
-
-        if (memberId == null) {
-            throw new IllegalArgumentException("Invalid guest email: " + email);
-        }
-        return memberId;
     }
 
     public float getGroupProfitRate(KkanbuGroupPK kkanbuGroupPK) {
