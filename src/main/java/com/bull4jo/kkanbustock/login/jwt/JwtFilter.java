@@ -5,6 +5,7 @@ import com.bull4jo.kkanbustock.member.service.UserDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
    private final JwtTokenProvider jwtTokenProvider;
@@ -32,12 +34,12 @@ public class JwtFilter extends OncePerRequestFilter {
 //    private final List<String> role_admin = new ArrayList<>(Collections.singletonList("ROLE_ADMIN"));
     private final List<String> role_user = new ArrayList<>(Collections.singletonList("ROLE_USER"));
 
-    @Autowired
-    public JwtFilter(JwtTokenProvider jwtTokenProvider, UserDetailService userDetailService){  //, AdminDetailService adminDetailService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-//        this.adminDetailService = adminDetailService;
-        this.userDetailService = userDetailService;
-    }
+//    @Autowired
+//    public JwtFilter(JwtTokenProvider jwtTokenProvider, UserDetailService userDetailService){  //, AdminDetailService adminDetailService) {
+//        this.jwtTokenProvider = jwtTokenProvider;
+////        this.adminDetailService = adminDetailService;
+//        this.userDetailService = userDetailService;
+//    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

@@ -31,8 +31,7 @@ import java.util.stream.Collectors;
 public class Member {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+    private String memberId;
 
     @Column
     private String id;  //account

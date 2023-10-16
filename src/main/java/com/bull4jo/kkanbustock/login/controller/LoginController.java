@@ -39,7 +39,7 @@ public class LoginController {
     private final UserDetailService userDetailService;
 
     @PostMapping("/register")
-    @ApiOperation(value = "회원가입")
+//    @ApiOperation(value = "회원가입")
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody MemberRegisterRequest request) {
         Map<String, Object> result = this.memberService.create(request.toServiceDto());
 
@@ -51,7 +51,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    @ApiOperation(value = "로그인 API")
+//    @ApiOperation(value = "로그인 API")
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
@@ -71,7 +71,7 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    @ApiOperation(value = "로그 아웃 API")
+//    @ApiOperation(value = "로그 아웃 API")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
         // 현재 인증된 사용자의 인증 토큰 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
