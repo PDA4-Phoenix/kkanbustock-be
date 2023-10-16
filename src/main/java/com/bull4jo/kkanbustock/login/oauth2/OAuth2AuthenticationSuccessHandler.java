@@ -26,7 +26,7 @@ import static com.bull4jo.kkanbustock.login.repository.CookieAuthorizationReques
 @RequiredArgsConstructor
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-//    @Value("${authorizedRedirectUri}")
+//    @Value("${ouah.authorizedRedirectUri}")
     private String redirectUri;
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieAuthorizationRequestRepository cookieAuthorizationRequestRepository;
