@@ -104,7 +104,7 @@ public class GroupService {
             String hostName = host.getNickname();
             String guestName = guest.getNickname();
             String name = groupNameGenerator.generateGroupName();
-            float profitRate = getGroupProfitRate(kkanbuGroupPK);
+            float profitRate = getGroupProfitRate(host.getId(), guest.getId());
             LocalDateTime createdDate = LocalDateTime.now();
 
             KkanbuGroup kkanbuGroup = KkanbuGroup
@@ -125,14 +125,15 @@ public class GroupService {
         }
     }
 
-    public float getGroupProfitRate(KkanbuGroupPK kkanbuGroupPK) {
+    public float getGroupProfitRate(String hostId, String guestId) {
+        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
+
         Float hostTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getHostId());
         Float hostTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getHostId());
 
         Float guestTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getGuestId());
         Float guestTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getGuestId());
 
-        float groupProfitRate = ((hostTotalEquities + guestTotalEquities) / (hostTotalPurchaseAmount + guestTotalPurchaseAmount) - 1) * 100;
-        return groupProfitRate;
+        return ((hostTotalEquities + guestTotalEquities) / (hostTotalPurchaseAmount + guestTotalPurchaseAmount) - 1) * 100;
     }
 }
