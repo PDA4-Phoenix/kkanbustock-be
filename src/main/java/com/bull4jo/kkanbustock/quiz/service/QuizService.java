@@ -53,7 +53,8 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public List<SolvedStockQuizResponse> getSolvedQuizzes(String memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow();
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         List<SolvedStockQuiz> solvedStockQuizzes = member.getSolvedStockQuizzes();
 
         return solvedStockQuizzes.stream()
