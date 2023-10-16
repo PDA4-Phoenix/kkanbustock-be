@@ -33,7 +33,7 @@ public class LoginService {
             member = Member.builder()
                     .id(userResourceNode.get("id").asText())
                     .email(userResourceNode.get("email").asText())
-                    .nickname(userResourceNode.get("name").asText())
+                    .name(userResourceNode.get("name").asText())
                     .build();
         } else {
             throw new RuntimeException("UNSUPPORTED SOCIAL TYPE");
@@ -41,7 +41,7 @@ public class LoginService {
 
         log.info("id = {}", member.getId());
         log.info("email = {}", member.getEmail());
-        log.info("nickname = {}", member.getNickname());
+        log.info("nickname = {}", member.getName());
         log.info("======================================================");
     }
 
