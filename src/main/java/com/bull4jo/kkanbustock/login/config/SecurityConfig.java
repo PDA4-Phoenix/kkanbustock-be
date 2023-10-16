@@ -9,6 +9,7 @@ import com.bull4jo.kkanbustock.login.service.PrincipalOAuth2UserService;
 import com.bull4jo.kkanbustock.login.repository.CookieAuthorizationRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig  {
 
     @Autowired
     private PrincipalOAuth2UserService principalOauth2UserService;
@@ -30,8 +31,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         //httpBasic, csrf, formLogin, rememberMe, logout, session disable
         http
                 .cors()
@@ -40,13 +41,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()  // csrf 미사용
                 .formLogin().disable()  // 로그인 폼 미사용
                 .rememberMe().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 세션을 사용하지 않음
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 토큰 기반 인증이므로 세션을 사용하지 않음
 
 
         //요청에 대한 권한 설정
         http.authorizeRequests()
-                .antMatchers( "/oauth2/**")
-                .permitAll()
+                .antMatchers( "/oauth2/**").permitAll()
                 .anyRequest().authenticated();
 
         //oauth2Login
@@ -62,8 +62,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler);
 
+        http.logout()
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID");
+
         //jwt filter 설정
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
 
 
     }
