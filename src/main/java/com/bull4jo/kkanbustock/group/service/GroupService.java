@@ -130,6 +130,7 @@ public class GroupService {
                     .build();
 
             groupRepository.save(kkanbuGroup);
+            groupApplication.setApprovalStatus(true);
         } else {
             throw new CustomException(ErrorCode.GROUP_FORBIDDEN);
             // 신청 거절 기능 추가 시 수정 필요 (현재 대기 or 승인 상태로만 나뉨)
