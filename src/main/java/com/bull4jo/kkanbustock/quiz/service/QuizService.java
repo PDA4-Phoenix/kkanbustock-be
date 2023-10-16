@@ -55,14 +55,17 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public List<SolvedStockQuizResponse> getSolvedQuizzes(String memberId, Pageable pageable) {
-        Page<StockQuiz> page = quizRepository
-                .getSolvedStockQuizByMemberId(memberId, pageable)
-                .orElseThrow();
+        Page<SolvedStockQuiz> solvedStockQuizPage = solvedQuizRepository.findByMemberId(memberId, pageable)
+                .orElseThrow(() -> new CustomException(ErrorCode.SOLVED_QUIZ_NOT_FOUND));
 
-        return page
+        return solvedStockQuizPage
                 .getContent()
                 .stream()
-                .map(SolvedStockQuizResponse::new)
+                .map(solvedStockQuiz ->
+                        SolvedStockQuizResponse.builder()
+                                .stockQuiz(solvedStockQuiz.getStockQuiz())
+                                .solvedStockQuiz(solvedStockQuiz)
+                                .build())
                 .collect(Collectors.toList());
     }
 

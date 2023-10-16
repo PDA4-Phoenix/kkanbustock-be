@@ -12,6 +12,4 @@ import java.util.Optional;
 
 @Repository
 public interface QuizRepository extends JpaRepository<StockQuiz, Long> {
-    @Query("SELECT q.stockQuiz FROM SolvedStockQuiz q WHERE q.member.id = :memberId")
-    Optional<Page<StockQuiz>> getSolvedStockQuizByMemberId(String memberId, Pageable pageable);
 }
