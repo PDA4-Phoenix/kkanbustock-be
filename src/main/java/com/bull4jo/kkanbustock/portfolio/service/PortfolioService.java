@@ -8,6 +8,7 @@ import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
 import com.bull4jo.kkanbustock.stock.domain.Stock;
 import com.bull4jo.kkanbustock.stock.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,11 +109,15 @@ public class PortfolioService {
 
     }
 
+    @Scheduled(cron = "0 1 2 * * *")
     public void updatePortfolio() {
         List<Portfolio> portfolios = portfolioRepository.findAll();
         for (Portfolio portfolio : portfolios) {
             portfolio.setDerivedAttributes();
         }
+
+        // 메서드 실행 시작 로그
+        System.out.println("updatePortfolio() 메서드가 실행됩니다.");
     }
 
     private List<Stock> getNRandomStock(int n) {
