@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,15 +73,19 @@ public class GroupService {
         Member host = memberRepository.findById(hostId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         String hostName = host.getNickname();
 
-        KkanbuGroupPK groupApplicationPk = KkanbuGroupPK
+        KkanbuGroupPK groupApplicationPK = KkanbuGroupPK
                 .builder()
                 .hostId(host.getId())
                 .guestId(guest.getId())
                 .build();
 
+        if (isDuplicateGroupApplicationPK(groupApplicationPK)) {
+            throw new CustomException(ErrorCode.GROUP_APPLICATION_FORBIDDEN);
+        }
+
         GroupApplication groupApplication = GroupApplication
                 .builder()
-                .groupApplicationPk(groupApplicationPk)
+                .groupApplicationPK(groupApplicationPK)
                 .host(host)
                 .guest(guest)
                 .hostName(hostName)
@@ -92,6 +97,10 @@ public class GroupService {
 
     @Transactional
     public void createGroup(KkanbuGroupPK kkanbuGroupPK) {
+
+        if (isDuplicateGroupPK(kkanbuGroupPK)) {
+            throw new CustomException(ErrorCode.GROUP_FORBIDDEN);
+        }
 
         GroupApplication groupApplication = groupApplicationRepository
                 .findById(kkanbuGroupPK)
@@ -122,7 +131,8 @@ public class GroupService {
 
             groupRepository.save(kkanbuGroup);
         } else {
-            throw new RuntimeException("이미 생성된 그룹입니다.");
+            throw new CustomException(ErrorCode.GROUP_FORBIDDEN);
+            // 신청 거절 기능 추가 시 수정 필요 (현재 대기 or 승인 상태로만 나뉨)
         }
     }
 
@@ -136,5 +146,15 @@ public class GroupService {
         Float guestTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getGuestId());
 
         return ((hostTotalEquities + guestTotalEquities) / (hostTotalPurchaseAmount + guestTotalPurchaseAmount) - 1) * 100;
+    }
+
+    private boolean isDuplicateGroupPK(KkanbuGroupPK kkanbuGroupPK) {
+        Optional<KkanbuGroup> kkanbuGroup = groupRepository.findByKkanbuGroupPK(kkanbuGroupPK);
+        return kkanbuGroup.isPresent();
+    }
+
+    private boolean isDuplicateGroupApplicationPK(KkanbuGroupPK groupApplicationPK) {
+        Optional<GroupApplication> groupApplication = groupApplicationRepository.findByGroupApplicationPK(groupApplicationPK);
+        return groupApplication.isPresent();
     }
 }
