@@ -53,11 +53,15 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public List<SolvedStockQuizResponse> getSolvedQuizzes(String memberId) {
-        List<StockQuiz> solvedStockQuizzes = quizRepository.getSolvedStockQuizByMemberId(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.SOLVED_QUIZ_NOT_FOUND));
-        return solvedStockQuizzes
-                .stream()
-                .map(SolvedStockQuizResponse::new)
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        List<SolvedStockQuiz> solvedStockQuizzes = member.getSolvedStockQuizzes();
+
+        return solvedStockQuizzes.stream()
+                .map(solvedStockQuiz ->
+                        SolvedStockQuizResponse.builder()
+                                .stockQuiz(solvedStockQuiz.getStockQuiz())
+                                .solvedStockQuiz(solvedStockQuiz)
+                                .build())
                 .collect(Collectors.toList());
     }
 
