@@ -51,7 +51,6 @@ public class GroupController {
 
     @GetMapping("/v1/groups/profits")
     public float getGroupProfitRate(@RequestParam String hostId, @RequestParam String guestId) {
-        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
-        return groupService.getGroupProfitRate(kkanbuGroupPK);
+        return groupService.getGroupProfitRate(hostId, guestId);
     }
 }

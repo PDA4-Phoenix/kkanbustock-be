@@ -1,5 +1,7 @@
 package com.bull4jo.kkanbustock.group.service;
 
+import com.bull4jo.kkanbustock.exception.CustomException;
+import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.group.controller.dto.*;
 import com.bull4jo.kkanbustock.group.domain.entity.GroupApplication;
 import com.bull4jo.kkanbustock.group.domain.entity.GroupNameGenerator;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +35,7 @@ public class GroupService {
     public List<ReceivedGroupApplicationListResponse> getReceivedGroupApplications(final String guestId, final boolean approvalStatus) {
         List<GroupApplication> receivedGroupApplications = groupApplicationRepository
                 .findByGuestIdAndApprovalStatus(guestId, approvalStatus)
-                .orElseThrow();
+                .orElseThrow(() -> new CustomException(ErrorCode.GROUP_APPLICATION_NOT_FOUND));
         return receivedGroupApplications
                 .stream()
                 .map(ReceivedGroupApplicationListResponse::new)
@@ -41,11 +44,11 @@ public class GroupService {
 
     @Transactional(readOnly = true)
     public List<GroupResponse> getMyGroups(final String memberId) {
-        List<KkanbuGroup> allGroups = groupRepository
+        List<KkanbuGroup> myGroups = groupRepository
                 .findAllByHostIdOrGuestId(memberId)
-                .orElseThrow();
+                .orElseThrow(() -> new CustomException(ErrorCode.MY_GROUP_NOT_FOUND));
 
-        return allGroups
+        return myGroups
                 .stream()
                 .map(GroupResponse::new)
                 .collect(Collectors.toList());
@@ -60,26 +63,29 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
-    // 승인 대기목록에 추가
     @Transactional
     public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
         String email = groupApplicationRequest.getEmail();
         String hostId = groupApplicationRequest.getHostId();
         LocalDateTime createdDate = LocalDateTime.now();
 
-        Member guest = memberRepository.findByEmail(email).orElseThrow();
-        Member host = memberRepository.findById(hostId).orElseThrow();
+        Member guest = memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member host = memberRepository.findById(hostId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         String hostName = host.getNickname();
 
-        KkanbuGroupPK groupApplicationPk = KkanbuGroupPK
+        KkanbuGroupPK groupApplicationPK = KkanbuGroupPK
                 .builder()
                 .hostId(host.getId())
                 .guestId(guest.getId())
                 .build();
 
+        if (isDuplicateGroupApplicationPK(groupApplicationPK)) {
+            throw new CustomException(ErrorCode.GROUP_APPLICATION_FORBIDDEN);
+        }
+
         GroupApplication groupApplication = GroupApplication
                 .builder()
-                .groupApplicationPk(groupApplicationPk)
+                .groupApplicationPK(groupApplicationPK)
                 .host(host)
                 .guest(guest)
                 .hostName(hostName)
@@ -92,9 +98,13 @@ public class GroupService {
     @Transactional
     public void createGroup(KkanbuGroupPK kkanbuGroupPK) {
 
+        if (isDuplicateGroupPK(kkanbuGroupPK)) {
+            throw new CustomException(ErrorCode.GROUP_FORBIDDEN);
+        }
+
         GroupApplication groupApplication = groupApplicationRepository
                 .findById(kkanbuGroupPK)
-                .orElseThrow();
+                .orElseThrow(() -> new CustomException(ErrorCode.GROUP_APPLICATION_NOT_FOUND));
 
         boolean approvalStatus = groupApplication.isApprovalStatus();
 
@@ -104,7 +114,7 @@ public class GroupService {
             String hostName = host.getNickname();
             String guestName = guest.getNickname();
             String name = groupNameGenerator.generateGroupName();
-            float profitRate = getGroupProfitRate(kkanbuGroupPK);
+            float profitRate = getGroupProfitRate(host.getId(), guest.getId());
             LocalDateTime createdDate = LocalDateTime.now();
 
             KkanbuGroup kkanbuGroup = KkanbuGroup
@@ -120,10 +130,15 @@ public class GroupService {
                     .build();
 
             groupRepository.save(kkanbuGroup);
+            groupApplication.setApprovalStatus(true);
         } else {
-            throw new RuntimeException("이미 생성된 그룹입니다.");
+            throw new CustomException(ErrorCode.GROUP_FORBIDDEN);
+            // 신청 거절 기능 추가 시 수정 필요 (현재 대기 or 승인 상태로만 나뉨)
         }
     }
+
+    public float getGroupProfitRate(String hostId, String guestId) {
+        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
 
     @Transactional
     public void updateGroupProfitRate() {
@@ -140,7 +155,16 @@ public class GroupService {
         Float guestTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getGuestId());
         Float guestTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getGuestId());
 
-        float groupProfitRate = ((hostTotalEquities + guestTotalEquities) / (hostTotalPurchaseAmount + guestTotalPurchaseAmount) - 1) * 100;
-        return groupProfitRate;
+        return ((hostTotalEquities + guestTotalEquities) / (hostTotalPurchaseAmount + guestTotalPurchaseAmount) - 1) * 100;
+    }
+
+    private boolean isDuplicateGroupPK(KkanbuGroupPK kkanbuGroupPK) {
+        Optional<KkanbuGroup> kkanbuGroup = groupRepository.findByKkanbuGroupPK(kkanbuGroupPK);
+        return kkanbuGroup.isPresent();
+    }
+
+    private boolean isDuplicateGroupApplicationPK(KkanbuGroupPK groupApplicationPK) {
+        Optional<GroupApplication> groupApplication = groupApplicationRepository.findByGroupApplicationPK(groupApplicationPK);
+        return groupApplication.isPresent();
     }
 }

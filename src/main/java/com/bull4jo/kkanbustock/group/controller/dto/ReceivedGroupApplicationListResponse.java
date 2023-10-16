@@ -7,13 +7,13 @@ import lombok.Getter;
 
 @Getter
 public class ReceivedGroupApplicationListResponse {
-    private final KkanbuGroupPK groupApplicationPk;
+    private final KkanbuGroupPK groupApplicationPK;
     private final String hostName;
     private final boolean approvalStatus;
 
     @Builder
     public ReceivedGroupApplicationListResponse(GroupApplication groupApplication) {
-        this.groupApplicationPk = groupApplication.getGroupApplicationPk();
+        this.groupApplicationPK = groupApplication.getGroupApplicationPK();
         this.hostName = groupApplication.getHostName();
         this.approvalStatus = groupApplication.isApprovalStatus();
     }

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class GroupApplication {
 
     @EmbeddedId
-    private KkanbuGroupPK groupApplicationPk;
+    private KkanbuGroupPK groupApplicationPK;
 
     @ManyToOne
     @MapsId("hostId")
@@ -35,8 +35,8 @@ public class GroupApplication {
     private LocalDateTime createdDate;
 
     @Builder
-    public GroupApplication(KkanbuGroupPK groupApplicationPk, Member host, Member guest, String hostName, boolean approvalStatus, LocalDateTime createdDate) {
-        this.groupApplicationPk = groupApplicationPk;
+    public GroupApplication(KkanbuGroupPK groupApplicationPK, Member host, Member guest, String hostName, boolean approvalStatus, LocalDateTime createdDate) {
+        this.groupApplicationPK = groupApplicationPK;
         this.host = host;
         this.guest = guest;
         this.hostName = hostName;
