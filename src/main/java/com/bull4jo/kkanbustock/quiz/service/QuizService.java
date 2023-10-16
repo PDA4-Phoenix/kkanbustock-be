@@ -55,10 +55,8 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public List<SolvedStockQuizResponse> getSolvedQuizzes(String memberId, Pageable pageable) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        // List<SolvedStockQuiz> solvedStockQuizzes = member.getSolvedStockQuizzes();
-        Page<SolvedStockQuiz> solvedStockQuizPage = member.getSolvedStockQuizzes();
+        Page<SolvedStockQuiz> solvedStockQuizPage = solvedQuizRepository.findByMemberId(memberId, pageable)
+                .orElseThrow(() -> new CustomException(ErrorCode.SOLVED_QUIZ_NOT_FOUND));
 
         return solvedStockQuizPage
                 .getContent()
