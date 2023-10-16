@@ -3,12 +3,15 @@ package com.bull4jo.kkanbustock.dictionary.controller;
 import com.bull4jo.kkanbustock.dictionary.domain.entity.Dictionary;
 import com.bull4jo.kkanbustock.dictionary.service.DictionaryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@ControllerAdvice
 @RestController
 @RequestMapping("/api")
 public class DictionaryController {
@@ -27,11 +30,19 @@ public class DictionaryController {
 
     @GetMapping("/v1/dictionary/{dictionaryId}")
     public ResponseEntity<Dictionary> getDictionaryById(@PathVariable Long dictionaryId) {
-        Optional<Dictionary> dictionary = dictionaryService.findById(dictionaryId);
-        if (dictionary.isPresent()) {
-            return ResponseEntity.ok(dictionary.get());
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            Dictionary dictionary = dictionaryService.findById(dictionaryId)
+                    .orElseThrow(() -> new NoSuchElementException("Dictionary not found"));
+            return ResponseEntity.ok(dictionary);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
 }

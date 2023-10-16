@@ -3,26 +3,35 @@ spring:
     url: jdbc:mysql://phoenix-database.clemtdx79oxt.ap-northeast-2.rds.amazonaws.com:3306/kkanbustock
     username: admin
     password: phoenix123
-oauth2:
-  google:
-    client-id: 587337760758-hur61mf58hofu8ji7o4unc5qru0re474.apps.googleusercontent.com
-    client-secret: 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
-    redirect-uri: http://localhost:8080/login/oauth2/code/google
-    token-uri: https://oauth2.googleapis.com/token
-    resource-uri: https://www.googleapis.com/oauth2/v2/userinfo
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 587337760758-hur61mf58hofu8ji7o4unc5qru0re474.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
+            scope:
+              - email
+              - profile
 
+oauth:
+  authorizedRedirectUri: http://localhost:3000
 
+jwt:
+  secret: icCfO69JA9szqMdptUvy8A71edtwzsnAwv6cQjtBE/kkHXhPnhokFYej6HGbtZFZ9GjIjzLLBM0jphmCJO04ArSaiigEZvGbjJBwLosImTSYBkddWn6XWalRkoWxGEeW61oz1Yts9HwXMJ3lTy5P2c+KEIL1GKy77CC8/ISVq9kv5d256qtDNTYj0A9+vjlHGpMoQgIhKGm5Sq11Sje+750hzVMkINLA5AJTiNOhj7JschPXgC7VPd8S6HRfa2Jn6PFtDQMEnW4IQ7+NwX6jSaGz2+qBFmyH5xQdAYkj13Rd3XmgQEahVXWTKPxDU78EpfRoNuE3F0og8sI3TFUkOQ==
 
+authorizedRedirectUri: http://localhost:8080/login/oauth2/authorization
 
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    open-in-view: false #osiv
+jpa:
+  database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  open-in-view: false #osiv
+  hibernate:
+    ddl-auto: update
+  properties:
     hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        show-sql: true
-        format_sql: true
+      show-sql: true
+      format_sql: true
 
 logging:
   level:
@@ -30,4 +39,10 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.springframework.jdbc.core.JdbcTemplate: DEBUG
     org.springframework.transaction: DEBUG
+    org.springframework.security: DEBUG
 
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
