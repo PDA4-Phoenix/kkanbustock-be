@@ -1,5 +1,7 @@
 package com.bull4jo.kkanbustock.group.service;
 
+import com.bull4jo.kkanbustock.exception.CustomException;
+import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.group.controller.dto.*;
 import com.bull4jo.kkanbustock.group.domain.entity.GroupApplication;
 import com.bull4jo.kkanbustock.group.domain.entity.GroupNameGenerator;
@@ -32,7 +34,7 @@ public class GroupService {
     public List<ReceivedGroupApplicationListResponse> getReceivedGroupApplications(final String guestId, final boolean approvalStatus) {
         List<GroupApplication> receivedGroupApplications = groupApplicationRepository
                 .findByGuestIdAndApprovalStatus(guestId, approvalStatus)
-                .orElseThrow();
+                .orElseThrow(() -> new CustomException(ErrorCode.GROUP_APPLICATION_NOT_FOUND));
         return receivedGroupApplications
                 .stream()
                 .map(ReceivedGroupApplicationListResponse::new)
@@ -41,11 +43,11 @@ public class GroupService {
 
     @Transactional(readOnly = true)
     public List<GroupResponse> getMyGroups(final String memberId) {
-        List<KkanbuGroup> allGroups = groupRepository
+        List<KkanbuGroup> myGroups = groupRepository
                 .findAllByHostIdOrGuestId(memberId)
-                .orElseThrow();
+                .orElseThrow(() -> new CustomException(ErrorCode.MY_GROUP_NOT_FOUND));
 
-        return allGroups
+        return myGroups
                 .stream()
                 .map(GroupResponse::new)
                 .collect(Collectors.toList());
@@ -60,15 +62,14 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
-    // 승인 대기목록에 추가
     @Transactional
     public void applyGroup(GroupApplicationRequest groupApplicationRequest) {
         String email = groupApplicationRequest.getEmail();
         String hostId = groupApplicationRequest.getHostId();
         LocalDateTime createdDate = LocalDateTime.now();
 
-        Member guest = memberRepository.findByEmail(email).orElseThrow();
-        Member host = memberRepository.findById(hostId).orElseThrow();
+        Member guest = memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member host = memberRepository.findById(hostId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         String hostName = host.getNickname();
 
         KkanbuGroupPK groupApplicationPk = KkanbuGroupPK
@@ -94,7 +95,7 @@ public class GroupService {
 
         GroupApplication groupApplication = groupApplicationRepository
                 .findById(kkanbuGroupPK)
-                .orElseThrow();
+                .orElseThrow(() -> new CustomException(ErrorCode.GROUP_APPLICATION_NOT_FOUND));
 
         boolean approvalStatus = groupApplication.isApprovalStatus();
 
