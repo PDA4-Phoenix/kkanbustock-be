@@ -53,7 +53,8 @@ public class QuizService {
 
     @Transactional(readOnly = true)
     public List<SolvedStockQuizResponse> getSolvedQuizzes(String memberId) {
-        List<StockQuiz> solvedStockQuizzes = quizRepository.getSolvedStockQuizByMemberId(memberId).orElseThrow(() -> new CustomException(ErrorCode.SOLVED_QUIZ_NOT_FOUND));
+        List<StockQuiz> solvedStockQuizzes = quizRepository.getSolvedStockQuizByMemberId(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SOLVED_QUIZ_NOT_FOUND));
         return solvedStockQuizzes
                 .stream()
                 .map(SolvedStockQuizResponse::new)
@@ -67,7 +68,9 @@ public class QuizService {
         Boolean isCorrect = solvedQuizRequest.getIsCorrect();
         LocalDateTime solvedDate = LocalDateTime.now();
 
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
         if (member.isDailyQuizSolved()) {
             throw new CustomException(ErrorCode.DAILY_QUIZ_FORBIDDEN);
         }
