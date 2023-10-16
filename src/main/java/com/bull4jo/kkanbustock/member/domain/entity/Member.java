@@ -68,15 +68,8 @@ public class Member {
         this.receivedGroupApplications = receivedGroupApplications;
     }
 
-    public void calculateTotalProfit() {
-        float totalPurchaseAmount = 0;
-        float totalEquitiesValue = 0;
-        for (Portfolio portfolio : portfolios) {
-            totalPurchaseAmount += portfolio.getPurchaseAmount();
-            totalEquitiesValue += portfolio.getEquitiesValue();
-        }
-        // 0 예외 처리
-        this.profitRate = (totalEquitiesValue / totalPurchaseAmount - 1) * 100;
+    public void setProfitRate(float profitRate) {
+        this.profitRate = profitRate;
     }
 
 

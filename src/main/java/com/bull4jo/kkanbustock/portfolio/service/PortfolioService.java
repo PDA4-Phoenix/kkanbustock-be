@@ -108,6 +108,13 @@ public class PortfolioService {
 
     }
 
+    public void updatePortfolio() {
+        List<Portfolio> portfolios = portfolioRepository.findAll();
+        for (Portfolio portfolio : portfolios) {
+            portfolio.setDerivedAttributes();
+        }
+    }
+
     private List<Stock> getNRandomStock(int n) {
         return new ArrayList<>();
     }
