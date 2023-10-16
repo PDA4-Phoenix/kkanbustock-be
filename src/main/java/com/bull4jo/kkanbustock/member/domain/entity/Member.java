@@ -34,7 +34,7 @@ public class Member {
     @Column
     private float profitRate;
 
-    @Column
+    @Column(nullable = false)
     private boolean isDailyQuizSolved; // 매일 자정마다 false로 초기화 해주기
 
     @OneToMany(mappedBy = "member")

@@ -47,12 +47,13 @@ public class GroupController {
     }
 
     @PostMapping("/v1/groups")
-    public void createGroup(@RequestBody KkanbuGroupPK kkanbuGroupPK) throws NoSuchAlgorithmException, IOException {
+    public void createGroup(@RequestBody KkanbuGroupPK kkanbuGroupPK) {
         groupService.createGroup(kkanbuGroupPK);
     }
 
     @GetMapping("/v1/groups/profits")
-    public float getGroupProfitRate(@RequestParam KkanbuGroupPK kkanbuGroupPK) {
+    public float getGroupProfitRate(@RequestParam String hostId, @RequestParam String guestId) {
+        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
         return groupService.getGroupProfitRate(kkanbuGroupPK);
     }
 }
