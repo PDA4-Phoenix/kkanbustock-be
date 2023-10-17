@@ -11,6 +11,9 @@ public interface StockRepository extends JpaRepository<Stock, String> {
 
     Optional<Stock> findStockByItmsNm(String itmsNum);
 
-    @Query(value = "SELECT * FROM stock order by RAND() LIMIT 20",nativeQuery = true)
+    @Query(value = "SELECT * FROM stock ORDER BY RAND() LIMIT 20", nativeQuery = true)
     Optional<List<Stock>> findRandomStocks();
+
+    @Query(value = "SELECT * FROM stock ORDER BY mrkt_tot_amt DESC LIMIT 500", nativeQuery = true)
+    Optional<List<Stock>> findTopByMrktTotAmt();
 }
