@@ -1,5 +1,8 @@
 package com.bull4jo.kkanbustock.news.service;
 
+import com.bull4jo.kkanbustock.exception.CustomException;
+import com.bull4jo.kkanbustock.exception.ErrorCode;
+import com.bull4jo.kkanbustock.news.controller.dto.NewsApiDetailResponse;
 import com.bull4jo.kkanbustock.news.controller.dto.NewsApiResponse;
 import com.bull4jo.kkanbustock.news.controller.dto.NewsResponse;
 import com.bull4jo.kkanbustock.news.domain.entity.News;
@@ -16,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +36,7 @@ public class NewsService {
     String clientSecret;
 
     public List<NewsResponse> getNews(Pageable pageable) {
+
         saveNews(); // 추후 삭제
         Page<News> news = newsRepository.findAll(pageable);
 
@@ -43,10 +48,16 @@ public class NewsService {
     }
 
     private void saveNews() { // 스케줄러로 매일 자정마다 알아서 실행되도록 설정
+        List<String> keywords = Arrays.asList("주식", "특징주", "환율", "금리", "주가");
+        for (String keyword : keywords) {
+            saveKeywordNews(keyword);
+        }
+    }
+
+    private void saveKeywordNews(String keyword) {
 
         newsRepository.deleteAll(); // 추후 삭제
 
-        String keyword = "주식";
         String apiURL = "https://openapi.naver.com/v1/search/news.json?query=" + keyword + "&sort=sim"; // 정확도순
 
         RestTemplate restTemplate = new RestTemplate();
@@ -58,19 +69,20 @@ public class NewsService {
 
         UriComponentsBuilder uri = UriComponentsBuilder.fromHttpUrl(apiURL);
         URI finalUri = uri.build().encode().toUri();
-        System.out.println(finalUri);
 
         NewsApiResponse response = restTemplate.exchange(finalUri, HttpMethod.GET, entity, NewsApiResponse.class).getBody();
-        System.out.println("@@@@@@" + response.getNewsApiDetailResponses().get(0).getLink());
 
-        for (int i = 0; i < response.getNewsApiDetailResponses().size(); i++) {
-            String title = replaceText(response.getNewsApiDetailResponses().get(i).getTitle());
-            String link = response.getNewsApiDetailResponses().get(i).getLink();
-            String description = replaceText(response.getNewsApiDetailResponses().get(i).getDescription());
-            String pubDate = response.getNewsApiDetailResponses().get(i).getPubDate();
+        if (response == null) {
+            throw new CustomException(ErrorCode.NEWS_NOT_FOUND);
+        }
 
-            News news = News
-                    .builder()
+        for (NewsApiDetailResponse apiDetailResponse : response.getNewsApiDetailResponses()) {
+            String title = replaceText(apiDetailResponse.getTitle());
+            String link = apiDetailResponse.getLink();
+            String description = replaceText(apiDetailResponse.getDescription());
+            String pubDate = apiDetailResponse.getPubDate();
+
+            News news = News.builder()
                     .title(title)
                     .link(link)
                     .description(description)
