@@ -153,11 +153,21 @@ public class GroupService {
     public float getGroupProfitRate(String hostId, String guestId) {
         KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
 
-        Float hostTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getHostId());
-        Float hostTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getHostId());
+        Float hostTotalEquities = portfolioRepository
+                .calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getHostId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CANT_CALCULATE_EQUITIES_VALUE_AMOUNT));
 
-        Float guestTotalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getGuestId());
-        Float guestTotalPurchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getGuestId());
+        Float hostTotalPurchaseAmount = portfolioRepository
+                .calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getHostId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CANT_CALCULATE_TOTAL_PURCHASE_AMOUNT));
+
+        Float guestTotalEquities = portfolioRepository
+                .calculateTotalEquitiesValueByMemberId(kkanbuGroupPK.getGuestId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CANT_CALCULATE_EQUITIES_VALUE_AMOUNT));
+
+        Float guestTotalPurchaseAmount = portfolioRepository
+                .calculateTotalPurchaseAmountByMemberId(kkanbuGroupPK.getGuestId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CANT_CALCULATE_TOTAL_PURCHASE_AMOUNT));
 
         return ((hostTotalEquities + guestTotalEquities) / (hostTotalPurchaseAmount + guestTotalPurchaseAmount) - 1) * 100;
     }
@@ -168,7 +178,14 @@ public class GroupService {
     }
 
     private boolean isDuplicateGroupApplicationPK(KkanbuGroupPK groupApplicationPK) {
-        Optional<GroupApplication> groupApplication = groupApplicationRepository.findByGroupApplicationPK(groupApplicationPK);
-        return groupApplication.isPresent();
+
+        // host - guest 관계
+        Optional<GroupApplication> groupApplication1 = groupApplicationRepository.findByGroupApplicationPK(groupApplicationPK);
+
+        // guest - host 관계
+        KkanbuGroupPK reversedGroupPK = new KkanbuGroupPK(groupApplicationPK.getGuestId(), groupApplicationPK.getHostId());
+        Optional<GroupApplication> groupApplication2 = groupApplicationRepository.findByGroupApplicationPK(reversedGroupPK);
+
+        return groupApplication1.isPresent() || groupApplication2.isPresent();
     }
 }

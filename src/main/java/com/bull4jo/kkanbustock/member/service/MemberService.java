@@ -3,6 +3,8 @@ package com.bull4jo.kkanbustock.member.service;
 import com.bull4jo.kkanbustock.exception.CustomException;
 import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.login.controller.request.MemberRegisterRequest;
+import com.bull4jo.kkanbustock.exception.CustomException;
+import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
@@ -80,8 +82,13 @@ public class MemberService {
         portfolioRepository.calculateTotalPurchaseAmountByMemberId(members.get(0).getId());
         portfolioRepository.calculateTotalEquitiesValueByMemberId(members.get(0).getId());
         for (Member member : members) {
-            Float purchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(member.getId());
-            Float totalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(member.getId());
+            Float purchaseAmount = portfolioRepository
+                    .calculateTotalPurchaseAmountByMemberId(member.getId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.CANT_CALCULATE_TOTAL_PURCHASE_AMOUNT));
+
+            Float totalEquities = portfolioRepository
+                    .calculateTotalEquitiesValueByMemberId(member.getId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.CANT_CALCULATE_EQUITIES_VALUE_AMOUNT));
 
             float profitRate = (totalEquities / purchaseAmount - 1) * 100;
             member.setProfitRate(profitRate);
