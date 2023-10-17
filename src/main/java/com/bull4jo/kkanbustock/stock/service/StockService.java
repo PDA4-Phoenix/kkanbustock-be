@@ -92,12 +92,10 @@ public class StockService {
     public Stock findByItmsNm(final String itmsNm) {
         Optional<Stock> byItmsNm = stockRepository.findStockByItmsNm(itmsNm);
         if (byItmsNm.isEmpty()) {
-            Stock stock = getFromDartByItmsNm(itmsNm).orElseThrow();
-            System.out.println("name from Dart");
+            Stock stock = getFromDartByItmsNm(itmsNm).orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
             stockRepository.save(stock);
             return stock;
         }
-        System.out.println("name from Repo");
         return byItmsNm.get();
     }
 
@@ -234,21 +232,21 @@ public class StockService {
 
     @Transactional
     public String update(final String strnCd, final Stock req) {
-        Stock stock = stockRepository.findById(strnCd).orElseThrow();
+        Stock stock = stockRepository.findById(strnCd).orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
         stock.update(req.getClpr(), req.getMkp());
         return stock.getSrtnCd();
     }
 
     @Transactional
     public String delete(final String strnCd) {
-        Stock stock = stockRepository.findById(strnCd).orElseThrow();
+        Stock stock = stockRepository.findById(strnCd).orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
         stockRepository.delete(stock);
         return stock.getSrtnCd();
     }
 
     @Transactional
     public String deleteByItmsNm(final String itmsNm) {
-        Stock stock = stockRepository.findStockByItmsNm(itmsNm).orElseThrow();
+        Stock stock = stockRepository.findStockByItmsNm(itmsNm).orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
         stockRepository.delete(stock);
         return stock.getSrtnCd();
     }

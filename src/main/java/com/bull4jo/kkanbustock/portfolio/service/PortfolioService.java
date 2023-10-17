@@ -83,7 +83,7 @@ public class PortfolioService {
 
         Stock stock = stockRepository
                 .findById(stockId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_COUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
 
         Portfolio portfolio = Portfolio.builder()
                 .portfolioPK(
