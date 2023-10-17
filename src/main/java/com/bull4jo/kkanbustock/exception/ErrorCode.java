@@ -34,6 +34,7 @@ public enum ErrorCode {
 
     GROUP_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "받은 깐부 신청을 찾을 수 없습니다."),
     MY_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "내 깐부 정보를 찾을 수 없습니다"),
+    TOP_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND,"그룹을 찾을 수 없습니다."),
 
     /*
      * 405 METHOD_NOT_ALLOWED: 허용되지 않은 Request Method 호출
