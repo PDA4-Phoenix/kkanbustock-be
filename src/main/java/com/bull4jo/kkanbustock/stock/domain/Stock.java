@@ -52,6 +52,18 @@ public class Stock {
     @Column
     private int basDt;
 
+    /**
+     * 전일대비 등락
+     */
+    @Column
+    private int vs;
+
+    /**
+     * 시가총액
+     */
+    @Column
+    private long mrktTotAmt;
+
     public void update(int clpr, int mkp) {
         this.clpr = clpr;
         this.mkp = mkp;
