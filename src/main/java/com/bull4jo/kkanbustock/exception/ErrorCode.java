@@ -49,6 +49,10 @@ public enum ErrorCode {
 
     STOCK_NOT_COUND(HttpStatus.NOT_FOUND, "주식 정보를 찾을 수 없습니다."),
 
+    RECOMMENDED_STOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "추천 종목을 찾을 수 없습니다."),
+
+    DICTIONARY_NOT_FOUND(HttpStatus.NOT_FOUND, "사전을 찾을 수 없습니다."),
+
     /*
      * 405 METHOD_NOT_ALLOWED: 허용되지 않은 Request Method 호출
      */
@@ -58,11 +62,6 @@ public enum ErrorCode {
      * 500 INTERNAL_SERVER_ERROR: 내부 서버 오류
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류입니다."),
-
-    /*
-     * 404 NOT_FOUND: 리소스를 찾을 수 없음
-     */
-    DICTIONARY_NOT_FOUND(HttpStatus.NOT_FOUND, "사전을 찾을 수 없습니다.")
 
     ;
 
