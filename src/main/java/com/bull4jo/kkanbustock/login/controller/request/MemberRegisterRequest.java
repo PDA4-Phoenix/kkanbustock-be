@@ -1,9 +1,11 @@
 package com.bull4jo.kkanbustock.login.controller.request;
 
 import com.bull4jo.kkanbustock.member.service.dto.MemberRegisterDTO;
+import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
 
+@Getter
 public class MemberRegisterRequest {
 
     @NotNull

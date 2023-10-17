@@ -1,10 +1,14 @@
 package com.bull4jo.kkanbustock.member.service;
 
+import com.bull4jo.kkanbustock.exception.CustomException;
+import com.bull4jo.kkanbustock.exception.ErrorCode;
+import com.bull4jo.kkanbustock.login.controller.request.MemberRegisterRequest;
+import com.bull4jo.kkanbustock.exception.CustomException;
+import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
-import com.bull4jo.kkanbustock.member.service.dto.MemberRegisterDTO;
-import com.bull4jo.kkanbustock.portfolio.domain.Portfolio;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
+import com.bull4jo.kkanbustock.portfolio.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,34 +25,36 @@ import java.util.Map;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PortfolioRepository portfolioRepository;
-
-
+    private final PortfolioService portfolioService;
     private final PasswordEncoder passwordEncoder;
 
-    public Map<String, Object> create(MemberRegisterDTO dto) {
+
+    @Transactional
+    public Map<String, Object> create(MemberRegisterRequest request) {
 
         Map<String, Object> resultMap = new HashMap<>();
 
         // 아이디가 중복되었을 때
-        if (memberRepository.findById(dto.getId()).isPresent()) {
+        if (memberRepository.findById(request.getAccount()).isPresent()) {
             resultMap.put("success", false);
             resultMap.put("message", "중복된 아이디 입니다.");
             return resultMap;
         }
 
-        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         Member newMember =
                 Member.builder()
-                        .id(dto.getId())
+                        .id(request.getAccount())
                         .password(encodedPassword)
-                        .name(dto.getName())
-                        .email(dto.getEmail())
+                        .name(request.getName())
+                        .email(request.getEmail())
                         .roles(Collections.singletonList("ROLE_USER"))
                         .build();
 
         try {
             memberRepository.save(newMember);
+            portfolioService.setRandomPortfolio(newMember.getId());
             resultMap.put("success", true);
         } catch (Exception e) {
             resultMap.put("success", false);
@@ -59,7 +65,9 @@ public class MemberService {
     }
 
     public Member findUser(String id) {
-        return memberRepository.findById(id).orElseThrow();
+        return memberRepository
+                .findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
 
@@ -74,8 +82,13 @@ public class MemberService {
         portfolioRepository.calculateTotalPurchaseAmountByMemberId(members.get(0).getId());
         portfolioRepository.calculateTotalEquitiesValueByMemberId(members.get(0).getId());
         for (Member member : members) {
-            Float purchaseAmount = portfolioRepository.calculateTotalPurchaseAmountByMemberId(member.getId());
-            Float totalEquities = portfolioRepository.calculateTotalEquitiesValueByMemberId(member.getId());
+            Float purchaseAmount = portfolioRepository
+                    .calculateTotalPurchaseAmountByMemberId(member.getId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.CANT_CALCULATE_TOTAL_PURCHASE_AMOUNT));
+
+            Float totalEquities = portfolioRepository
+                    .calculateTotalEquitiesValueByMemberId(member.getId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.CANT_CALCULATE_EQUITIES_VALUE_AMOUNT));
 
             float profitRate = (totalEquities / purchaseAmount - 1) * 100;
             member.setProfitRate(profitRate);

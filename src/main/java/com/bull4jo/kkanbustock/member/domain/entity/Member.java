@@ -12,10 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,9 +29,6 @@ import java.util.stream.Collectors;
 public class Member {
 
     @Id
-    private String memberId;
-
-    @Column
     private String id;  //account
 
     @Column
@@ -46,8 +41,8 @@ public class Member {
     private String name;
 
     @Column
-    private InvestorType
-            investorType;
+    private InvestorType investorType;
+
     @Column
     private float profitRate;
 
@@ -116,8 +111,6 @@ public class Member {
     public void setProfitRate(float profitRate) {
         this.profitRate = profitRate;
     }
-
-
 
     public void setDailyQuizSolved(boolean dailyQuizSolved) {
         isDailyQuizSolved = dailyQuizSolved;

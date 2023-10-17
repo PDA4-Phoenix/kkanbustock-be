@@ -1,6 +1,8 @@
 package com.bull4jo.kkanbustock.quiz.repository;
 
 import com.bull4jo.kkanbustock.quiz.domain.entity.SolvedStockQuiz;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,4 +17,6 @@ public interface SolvedQuizRepository extends JpaRepository<SolvedStockQuiz, Lon
 
     @Query("SELECT q.id FROM StockQuiz q LEFT JOIN SolvedStockQuiz sq ON q.id = sq.stockQuiz.id AND sq.member.id = :memberId WHERE sq.stockQuiz.id IS NULL")
     Optional<List<Long>> getUnSolvedQuizIdByMemberId(String memberId);
+
+    Optional<Page<SolvedStockQuiz>> findByMemberId(String memberId, Pageable pageable);
 }

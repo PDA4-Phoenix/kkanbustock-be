@@ -5,6 +5,8 @@ import com.bull4jo.kkanbustock.quiz.controller.dto.DailyQuizResponse;
 import com.bull4jo.kkanbustock.quiz.controller.dto.SolvedStockQuizResponse;
 import com.bull4jo.kkanbustock.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +28,12 @@ public class QuizController {
 
     @GetMapping("/v1/quizzes/{memberId}")
     public ResponseEntity<List<SolvedStockQuizResponse>> getSolvedQuizzes(
-            @PathVariable String memberId
+            @PathVariable String memberId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(quizService.getSolvedQuizzes(memberId));
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(quizService.getSolvedQuizzes(memberId, pageable));
     }
 
     @PostMapping("/v1/quizzes/daily")

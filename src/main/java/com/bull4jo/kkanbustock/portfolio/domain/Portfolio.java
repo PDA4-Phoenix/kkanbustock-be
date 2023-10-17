@@ -75,4 +75,13 @@ public class Portfolio {
                 ", gainsLosses=" + gainsLosses +
                 '}';
     }
+
+    public Portfolio(PortfolioPK portfolioPK, Member member, Stock stock, float purchasePrice, int quantity) {
+        this.portfolioPK = portfolioPK;
+        this.member = member;
+        this.stock = stock;
+        this.purchasePrice = purchasePrice;
+        this.quantity = quantity;
+        this.setDerivedAttributes();
+    }
 }
