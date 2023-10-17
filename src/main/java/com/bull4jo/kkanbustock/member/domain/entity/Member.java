@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import javax.swing.*;
@@ -31,9 +30,6 @@ import java.util.stream.Collectors;
 public class Member {
 
     @Id
-    private String memberId;
-
-    @Column
     private String id;  //account
 
     @Column
