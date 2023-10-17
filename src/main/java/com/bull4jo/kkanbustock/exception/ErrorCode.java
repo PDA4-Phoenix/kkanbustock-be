@@ -47,7 +47,7 @@ public enum ErrorCode {
 
     PORTFOLIO_NOT_FOUND(HttpStatus.NOT_FOUND, "포트폴리오를 찾을 수 없습니다."),
 
-    STOCK_NOT_COUND(HttpStatus.NOT_FOUND, "주식 정보를 찾을 수 없습니다."),
+    STOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "주식 정보를 찾을 수 없습니다."),
 
     RECOMMENDED_STOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "추천 종목을 찾을 수 없습니다."),
 
