@@ -5,11 +5,10 @@ import com.bull4jo.kkanbustock.login.controller.request.MemberRegisterRequest;
 import com.bull4jo.kkanbustock.login.controller.response.AuthenticationResponse;
 import com.bull4jo.kkanbustock.login.jwt.JwtTokenProvider;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
-import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.member.service.MemberService;
 import com.bull4jo.kkanbustock.member.service.UserDetailService;
 
-import io.swagger.annotations.ApiOperation;
+import com.bull4jo.kkanbustock.member.service.dto.MemberRegisterDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +32,6 @@ import java.util.Map;
 public class LoginController {
 
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailService userDetailService;
@@ -58,7 +56,6 @@ public class LoginController {
         String id = authenticationRequest.getId();
         Member foundUser = memberService.findUser(id);
 
-
         if (!passwordEncoder.matches(authenticationRequest.getPassword(), foundUser.getPassword())) {
             return ResponseEntity.ok("Password invalid");
         }
@@ -67,7 +64,18 @@ public class LoginController {
         final String token = jwtTokenProvider.createToken(userDetails.getUsername(), foundUser.getRoles());
         final Member member = userDetailService.getUsers(id);
 
-        return ResponseEntity.ok(new AuthenticationResponse(token, member));
+        return ResponseEntity.ok(
+                new AuthenticationResponse(
+                        token,
+                        MemberRegisterDTO
+                            .of(
+                                member.getId(),
+                                member.getPassword(),
+                                member.getEmail(),
+                                member.getName()
+                            )
+                )
+        );
     }
 
     @PostMapping("/logout")
