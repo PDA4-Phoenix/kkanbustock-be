@@ -72,7 +72,7 @@ public class GroupService {
 
         Member guest = memberRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
         Member host = memberRepository.findById(hostId).orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        String hostName = host.getNickname();
+        String hostName = host.getName();
 
         KkanbuGroupPK groupApplicationPK = KkanbuGroupPK
                 .builder()
@@ -112,8 +112,8 @@ public class GroupService {
         if (!approvalStatus) {
             Member host = groupApplication.getHost();
             Member guest = groupApplication.getGuest();
-            String hostName = host.getNickname();
-            String guestName = guest.getNickname();
+            String hostName = host.getName();
+            String guestName = guest.getName();
             String name = groupNameGenerator.generateGroupName();
             float profitRate = getGroupProfitRate(host.getId(), guest.getId());
             LocalDateTime createdDate = LocalDateTime.now();
