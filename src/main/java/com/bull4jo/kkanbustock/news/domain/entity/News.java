@@ -31,7 +31,8 @@ public class News {
     private String pubDate;
 
     @Builder
-    public News(String title, String link, String description, String pubDate) {
+    public News(Long id, String title, String link, String description, String pubDate) {
+        this.id = id;
         this.title = title;
         this.link = link;
         this.description = description;
