@@ -7,8 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
+
+@ControllerAdvice
 @RestController
 @RequestMapping("/api")
 public class DictionaryController {
@@ -27,11 +28,8 @@ public class DictionaryController {
 
     @GetMapping("/v1/dictionary/{dictionaryId}")
     public ResponseEntity<Dictionary> getDictionaryById(@PathVariable Long dictionaryId) {
-        Optional<Dictionary> dictionary = dictionaryService.findById(dictionaryId);
-        if (dictionary.isPresent()) {
-            return ResponseEntity.ok(dictionary.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Dictionary dictionary = dictionaryService.findById(dictionaryId);
+        return ResponseEntity.ok(dictionary);
     }
+
 }
