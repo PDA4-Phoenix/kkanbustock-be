@@ -202,6 +202,7 @@ public class StockService {
         return stock;
     }
 
+    @Transactional
     public void parseResponses(String jsonResponse) {
         // Parse the JSON response
         JsonObject responseJson = JsonParser.parseString(jsonResponse).getAsJsonObject();
@@ -225,7 +226,6 @@ public class StockService {
                     .build();
             System.out.println(stock.getItmsNm());
             list.add(stock);
-
 
         }
         stockRepository.saveAll(list);
