@@ -3,8 +3,10 @@ package com.bull4jo.kkanbustock.news.controller.dto;
 import com.bull4jo.kkanbustock.news.domain.entity.News;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class NewsResponse {
     private final Long id;
     private final String title;
