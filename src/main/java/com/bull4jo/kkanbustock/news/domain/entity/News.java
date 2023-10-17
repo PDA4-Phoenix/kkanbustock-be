@@ -3,7 +3,6 @@ package com.bull4jo.kkanbustock.news.domain.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -11,7 +10,6 @@ import javax.persistence.*;
 @Table
 @Getter
 @NoArgsConstructor
-@ToString
 public class News {
 
     @Id
@@ -37,12 +35,6 @@ public class News {
         this.link = link;
         this.description = description;
         this.pubDate = pubDate;
-    }
-
-    public static String replace(String text){
-        return text.replace("<b>", "")
-                .replace("</b>", "")
-                .replace("&quot;", "\"");
     }
 
 }
