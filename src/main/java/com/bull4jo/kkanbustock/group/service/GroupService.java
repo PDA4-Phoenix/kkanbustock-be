@@ -178,7 +178,14 @@ public class GroupService {
     }
 
     private boolean isDuplicateGroupApplicationPK(KkanbuGroupPK groupApplicationPK) {
-        Optional<GroupApplication> groupApplication = groupApplicationRepository.findByGroupApplicationPK(groupApplicationPK);
-        return groupApplication.isPresent();
+
+        // host - guest 관계
+        Optional<GroupApplication> groupApplication1 = groupApplicationRepository.findByGroupApplicationPK(groupApplicationPK);
+
+        // guest - host 관계
+        KkanbuGroupPK reversedGroupPK = new KkanbuGroupPK(groupApplicationPK.getGuestId(), groupApplicationPK.getHostId());
+        Optional<GroupApplication> groupApplication2 = groupApplicationRepository.findByGroupApplicationPK(reversedGroupPK);
+
+        return groupApplication1.isPresent() || groupApplication2.isPresent();
     }
 }

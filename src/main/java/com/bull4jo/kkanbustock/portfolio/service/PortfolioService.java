@@ -1,5 +1,8 @@
 package com.bull4jo.kkanbustock.portfolio.service;
 
+import com.bull4jo.kkanbustock.common.RandomNumberGenerator;
+import com.bull4jo.kkanbustock.exception.CustomException;
+import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.portfolio.domain.Portfolio;
