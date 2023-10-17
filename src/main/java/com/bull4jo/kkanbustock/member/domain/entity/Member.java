@@ -10,11 +10,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Entity
@@ -24,18 +27,22 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Member {
+
     @Id
-    private String id;
+    private String id;  //account
+
+    @Column
+    private String password;
 
     @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
-    private String nickname;
+    private String name;
 
     @Column
-    private InvestorType
-            investorType;
+    private InvestorType investorType;
+
     @Column
     private float profitRate;
 
@@ -60,10 +67,21 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Portfolio> portfolios;
 
-    public Member(String id, String email, String password, String nickname, InvestorType investorType, boolean isDailyQuizSolved, List<SolvedStockQuiz> solvedStockQuizzes, List<KkanbuGroup> hostKkanbuGroups, List<KkanbuGroup> guestKkanbuGroups, List<GroupApplication> sentGroupApplications, List<GroupApplication> receivedGroupApplications) {
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
+
+    public Member(String id, String email, String password, String name, InvestorType investorType, boolean isDailyQuizSolved, List<SolvedStockQuiz> solvedStockQuizzes, List<KkanbuGroup> hostKkanbuGroups, List<KkanbuGroup> guestKkanbuGroups, List<GroupApplication> sentGroupApplications, List<GroupApplication> receivedGroupApplications) {
         this.id = id;
         this.email = email;
-        this.nickname = nickname;
+        this.password = password;
+        this.name = name;
         this.investorType = investorType;
         this.isDailyQuizSolved = isDailyQuizSolved;
         this.solvedStockQuizzes = solvedStockQuizzes;
