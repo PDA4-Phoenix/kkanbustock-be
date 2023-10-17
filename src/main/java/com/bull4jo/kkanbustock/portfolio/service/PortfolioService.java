@@ -1,5 +1,6 @@
 package com.bull4jo.kkanbustock.portfolio.service;
 
+import com.bull4jo.kkanbustock.common.RandomNumberGenerator;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.portfolio.domain.Portfolio;
@@ -81,34 +82,6 @@ public class PortfolioService {
         return portfolioRepository.save(portfolio).getPortfolioPK().getMemberId();
     }
 
-
-    /**
-     * 미완;
-     * @Query("SELECT p FROM Portfolio p ORDER BY RAND()")
-     * stockRepository에서 랜덤 n개 엔티티 가져오는 로직 개선필요..
-     */
-    @Transactional
-    public void generateRandomPortfolio(final String memberId) {
-        Random random = new Random();
-        Member member = memberRepository.findById(memberId).orElseThrow();
-        int min = 2;
-        int max = 5;
-        int rdm = random.nextInt(max - min + 1) - min;
-        List<Stock> nRandomStock = getNRandomStock(rdm);
-        for (Stock stock: nRandomStock) {
-            Portfolio portfolio = Portfolio
-                    .builder()
-                    .member(member)
-                    .stock(stock)
-                    .purchasePrice(3)
-                    .quantity(3)
-                    .build();
-            portfolio.setDerivedAttributes();
-            portfolioRepository.save(portfolio);
-        }
-
-    }
-
     @Scheduled(cron = "0 1 2 * * *")
     public void updatePortfolio() {
         List<Portfolio> portfolios = portfolioRepository.findAll();
@@ -120,7 +93,23 @@ public class PortfolioService {
         System.out.println("updatePortfolio() 메서드가 실행됩니다.");
     }
 
-    private List<Stock> getNRandomStock(int n) {
-        return new ArrayList<>();
+//    @Transactional
+    public String setRandomPortfolio(String memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        List<Stock> stocks = stockRepository.findRandomStocks().orElseThrow(() -> new RuntimeException("stock 랜덤 못빼옴"));
+        int stockSize = stocks.size();
+        int count = RandomNumberGenerator.random(2, 8);
+
+        for (int i = 0; i < count; i++) {
+            PortfolioPK portfolioPK = new PortfolioPK(memberId, stocks.get(i).getSrtnCd());
+            double purchasePrice = RandomNumberGenerator.random(stocks.get(i).getClpr() * 0.7, (float) stocks.get(i).getClpr() * 1.3);
+
+            int quantity = RandomNumberGenerator.random(1, 50);
+            Portfolio portfolio = new Portfolio(portfolioPK, member, stocks.get(i), (float) purchasePrice, quantity);
+
+            portfolioRepository.save(portfolio);
+        }
+
+        return memberId;
     }
 }
