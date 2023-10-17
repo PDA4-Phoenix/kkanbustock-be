@@ -39,7 +39,7 @@ public class LoginController {
     @PostMapping("/register")
 //    @ApiOperation(value = "회원가입")
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody MemberRegisterRequest request) {
-        Map<String, Object> result = this.memberService.create(request.toServiceDto());
+        Map<String, Object> result = this.memberService.create(request);
 
         if ((Boolean) result.get("success")) {
             return new ResponseEntity<>(result, HttpStatus.OK);

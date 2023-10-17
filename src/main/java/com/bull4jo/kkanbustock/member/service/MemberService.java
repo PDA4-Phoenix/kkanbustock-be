@@ -2,6 +2,7 @@ package com.bull4jo.kkanbustock.member.service;
 
 import com.bull4jo.kkanbustock.exception.CustomException;
 import com.bull4jo.kkanbustock.exception.ErrorCode;
+import com.bull4jo.kkanbustock.login.controller.request.MemberRegisterRequest;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.member.service.dto.MemberRegisterDTO;
@@ -26,25 +27,25 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public Map<String, Object> create(MemberRegisterDTO dto) {
+    public Map<String, Object> create(MemberRegisterRequest request) {
 
         Map<String, Object> resultMap = new HashMap<>();
 
         // 아이디가 중복되었을 때
-        if (memberRepository.findById(dto.getId()).isPresent()) {
+        if (memberRepository.findById(request.getAccount()).isPresent()) {
             resultMap.put("success", false);
             resultMap.put("message", "중복된 아이디 입니다.");
             return resultMap;
         }
 
-        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
 
         Member newMember =
                 Member.builder()
-                        .id(dto.getId())
+                        .id(request.getAccount())
                         .password(encodedPassword)
-                        .name(dto.getName())
-                        .email(dto.getEmail())
+                        .name(request.getName())
+                        .email(request.getEmail())
                         .roles(Collections.singletonList("ROLE_USER"))
                         .build();
 

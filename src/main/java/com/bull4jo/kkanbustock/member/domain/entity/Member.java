@@ -14,7 +14,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,8 +41,8 @@ public class Member {
     private String name;
 
     @Column
-    private InvestorType
-            investorType;
+    private InvestorType investorType;
+
     @Column
     private float profitRate;
 
