@@ -5,8 +5,8 @@ import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.login.controller.request.MemberRegisterRequest;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
-import com.bull4jo.kkanbustock.member.service.dto.MemberRegisterDTO;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
+import com.bull4jo.kkanbustock.portfolio.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,10 +23,11 @@ import java.util.Map;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PortfolioRepository portfolioRepository;
-
-
+    private final PortfolioService portfolioService;
     private final PasswordEncoder passwordEncoder;
 
+
+    @Transactional
     public Map<String, Object> create(MemberRegisterRequest request) {
 
         Map<String, Object> resultMap = new HashMap<>();
@@ -51,6 +52,7 @@ public class MemberService {
 
         try {
             memberRepository.save(newMember);
+            portfolioService.setRandomPortfolio(newMember.getId());
             resultMap.put("success", true);
         } catch (Exception e) {
             resultMap.put("success", false);
