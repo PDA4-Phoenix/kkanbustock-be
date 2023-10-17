@@ -112,8 +112,6 @@ public class Member {
         this.profitRate = profitRate;
     }
 
-
-
     public void setDailyQuizSolved(boolean dailyQuizSolved) {
         isDailyQuizSolved = dailyQuizSolved;
     }
