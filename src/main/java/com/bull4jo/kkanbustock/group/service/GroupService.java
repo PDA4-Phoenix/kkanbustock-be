@@ -145,7 +145,10 @@ public class GroupService {
     public void updateGroupProfitRate() {
         List<KkanbuGroup> groups = groupRepository.findAll();
         for (KkanbuGroup group : groups) {
-            group.setProfitRate(getGroupProfitRate(group.getHost().getId(), group.getGuest().getId()));
+            group.setProfitRate(getGroupProfitRate(
+                    group.getHost().getId(),
+                    group.getGuest().getId())
+            );
         }
 
         // 메서드 실행 시작 로그
