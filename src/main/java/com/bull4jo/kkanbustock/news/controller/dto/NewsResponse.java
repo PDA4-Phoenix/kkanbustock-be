@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class NewsResponse {
+    private final Long id;
     private final String title;
     private final String link;
     private final String description;
@@ -13,6 +14,7 @@ public class NewsResponse {
 
     @Builder
     public NewsResponse(News news) {
+        this.id = news.getId();
         this.title = news.getTitle();
         this.link = news.getLink();
         this.description = news.getDescription();
