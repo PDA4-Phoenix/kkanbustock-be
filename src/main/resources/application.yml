@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://kkanbu-test-db.clemtdx79oxt.ap-northeast-2.rds.amazonaws.com:3306/kkanbustock
+    url: jdbc:mysql://min-sang-eun-db.clemtdx79oxt.ap-northeast-2.rds.amazonaws.com:3306/kkanbustock
     username: admin
     password: kkanbustock
 
@@ -13,6 +13,13 @@ spring:
       hibernate:
         show-sql: true
         format_sql: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+jwt:
+  header: Authorization
+  secret: '62ee24aa5950496692f0c633e26b58b062ee24aa5950496692f0c633e26b58b01'
+  token-validity-in-seconds: 86400
 
 logging:
   level:
@@ -26,3 +33,4 @@ server:
     encoding:
       charset: UTF-8
       force: true
+  port: 8081
