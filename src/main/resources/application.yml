@@ -13,7 +13,6 @@ spring:
       hibernate:
         show-sql: true
         format_sql: true
-
   mvc:
     pathmatch:
       matching-strategy:

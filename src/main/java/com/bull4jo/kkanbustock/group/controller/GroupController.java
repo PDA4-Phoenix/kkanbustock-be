@@ -53,4 +53,14 @@ public class GroupController {
     public float getGroupProfitRate(@RequestParam String hostId, @RequestParam String guestId) {
         return groupService.getGroupProfitRate(hostId, guestId);
     }
+
+    @GetMapping("v1/groups/top-n-groups")
+    public ResponseEntity<List<TopNGroupResponse>> getTopNGroups(@RequestParam int n) {
+        return ResponseEntity.ok(groupService.findTopNGroups(n));
+    }
+
+    @GetMapping("v1/groups/my-groups-profit-rate")
+    public ResponseEntity<List<MyGroupProfitRateResponse>> getMyGroupsProfitRate( @RequestParam int n, @RequestParam String memberId) {
+        return ResponseEntity.ok(groupService.calculateMyGroupsProfitRate(n, memberId));
+    }
 }

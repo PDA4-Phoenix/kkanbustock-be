@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -188,4 +190,42 @@ public class GroupService {
 
         return groupApplication1.isPresent() || groupApplication2.isPresent();
     }
+
+    @Transactional(readOnly = true)
+    public List<TopNGroupResponse> findTopNGroups(int n) {
+        // findTopByKkanbuGroupPKOrderByProfitRateDesc 메서드를 호출하여 전체 그룹을 조회
+        List<KkanbuGroup> groupList = groupRepository.findTopByOrderByProfitRateDesc()
+                .orElseThrow(() -> new CustomException(ErrorCode.TOP_GROUP_NOT_FOUND));
+
+        if (groupList.size() < n) {
+            return groupList.stream()
+                    .map(TopNGroupResponse::new)
+                    .collect(Collectors.toList());
+        } else {
+            return groupList.subList(0, n).stream()
+                    .map(TopNGroupResponse::new)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyGroupProfitRateResponse> calculateMyGroupsProfitRate(int n, String memberId) {
+        List<KkanbuGroup> myGroups = groupRepository
+                .findAllByHostIdOrGuestId(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MY_GROUP_NOT_FOUND));
+
+        // 수익률로 내림차순 정렬
+        List<KkanbuGroup> sortedGroups = myGroups.stream()
+                .sorted(Comparator.comparing(KkanbuGroup::getProfitRate).reversed())
+                .collect(Collectors.toList());
+
+        // 상위 n개의 그룹만 선택하고 MyGroupProfitRateResponse로 매핑
+        return sortedGroups.stream()
+                .limit(n)
+                .map(group -> new MyGroupProfitRateResponse(group.getName(), group.getProfitRate(), memberId))
+                .collect(Collectors.toList());
+    }
+
+
+
 }
