@@ -30,8 +30,10 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.15'
 
+	implementation 'org.json:json:20210307'
+	implementation 'org.unbescape:unbescape:1.1.6.RELEASE'
+
 	implementation 'org.springframework:spring-context'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
 
 
 	compileOnly 'org.projectlombok:lombok'
