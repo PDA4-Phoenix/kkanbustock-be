@@ -31,12 +31,5 @@ class StockServiceTest {
         duration = endTime - startTime;
         System.out.println("duration = " + duration);
     }
-    @Test
-    public void findSinhan() throws Exception {
-        // given
-        stockService.getFromShinhan();
-        // when
 
-        // then
-    }
 }
