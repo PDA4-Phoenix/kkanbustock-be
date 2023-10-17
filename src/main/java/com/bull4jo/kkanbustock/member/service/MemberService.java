@@ -1,9 +1,10 @@
 package com.bull4jo.kkanbustock.member.service;
 
+import com.bull4jo.kkanbustock.exception.CustomException;
+import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.member.service.dto.MemberRegisterDTO;
-import com.bull4jo.kkanbustock.portfolio.domain.Portfolio;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -59,7 +60,9 @@ public class MemberService {
     }
 
     public Member findUser(String id) {
-        return memberRepository.findById(id).orElseThrow();
+        return memberRepository
+                .findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
 
