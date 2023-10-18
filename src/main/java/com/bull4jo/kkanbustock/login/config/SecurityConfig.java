@@ -47,19 +47,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
     /* 맨 아래 configure를 하기 전에 먼저 실행되는 함수 */
     /* PUBLIC_URI에 모든 접근을 허용하기 위해 검증을 ignoring */
     @Override
@@ -69,9 +56,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() // 세션 사용 X
-                .authorizeRequests() // 요청에 대한 사용 권한 체크
+                .authorizeRequests()
                 .antMatchers("/api/v1/**").hasRole("USER")
                 .antMatchers(ADMIN_URI).hasRole("ADMIN")
                 .antMatchers(USER_URI).hasRole("USER")
