@@ -57,7 +57,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{env.ECR}}/${{env.ECR_REPOSITORY_NAME}}:back-${{env.TAG}}
+            ${{env.ECR}}/${{env.ECR_REPOSITORY_NAME}}:main-${{env.TAG}}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
