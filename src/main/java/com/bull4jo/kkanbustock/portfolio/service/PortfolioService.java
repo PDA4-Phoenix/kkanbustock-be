@@ -31,7 +31,8 @@ public class PortfolioService {
 
     // 포트폴리오 단일 조회
     @Transactional(readOnly = true)
-    public PortfolioResponse findByMemberIdAndStockId(final PortfolioPK portfolioPK) {
+    public PortfolioResponse findByMemberIdAndStockId(final String memberId, final String stockId) {
+        PortfolioPK portfolioPK = new PortfolioPK(memberId, stockId);
         return new PortfolioResponse(portfolioRepository
                 .findById(portfolioPK)
                 .orElseThrow(() -> new CustomException(ErrorCode.PORTFOLIO_NOT_FOUND)));
