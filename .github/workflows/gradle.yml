@@ -1,8 +1,9 @@
 name: Backend CI / CD
+# master 브랜치에 push 되면 workflow 작동
 on:
   push:
     branches:
-      - deploy
+      - "main"
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY_NAME: "team-4"
