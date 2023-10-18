@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Repository
 public interface PortfolioRepository extends JpaRepository<Portfolio, PortfolioPK> {
-    Optional<List<Portfolio>> findPortfoliosByMemberId(String memberId);
+    Optional<List<Portfolio>> findByMemberId(String memberId);
 
     // 멤버 계좌 전체 매수 금액 계산
     @Query("SELECT SUM(p.purchaseAmount) FROM Portfolio p WHERE p.member.id = :memberId")
