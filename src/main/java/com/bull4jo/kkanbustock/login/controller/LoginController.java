@@ -53,16 +53,16 @@ public class LoginController {
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
-        String id = authenticationRequest.getId();
-        Member foundUser = memberService.findUser(id);
+        String email = authenticationRequest.getEmail();
+        Member foundUser = memberService.findUser(email);
 
         if (!passwordEncoder.matches(authenticationRequest.getPassword(), foundUser.getPassword())) {
             return ResponseEntity.ok("Password invalid");
         }
 
-        final UserDetails userDetails = userDetailService.loadUserByUsername(id);
+        final UserDetails userDetails = userDetailService.loadUserByUsername(email);
         final String token = jwtTokenProvider.createToken(userDetails.getUsername(), foundUser.getRoles());
-        final Member member = userDetailService.getUsers(id);
+        final Member member = userDetailService.getUsers(email);
 
         return ResponseEntity.ok(
                 new AuthenticationResponse(
