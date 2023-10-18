@@ -17,8 +17,8 @@ public class PortfolioController {
     private final PortfolioService portfolioService;
 
     @GetMapping("/v1/portfolios")
-    public PortfolioResponse findByMemberIdAndStockId(@RequestParam PortfolioPK portfolioPK) {
-        return portfolioService.findByMemberIdAndStockId(portfolioPK);
+    public PortfolioResponse findByMemberIdAndStockId(@RequestParam String memberId, @RequestParam String stockId) {
+        return portfolioService.findByMemberIdAndStockId(memberId, stockId);
     }
 
     @GetMapping("/v1/portfolios/{memberId}")
