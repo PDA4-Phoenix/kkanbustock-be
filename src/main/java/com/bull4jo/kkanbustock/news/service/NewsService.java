@@ -37,7 +37,7 @@ public class NewsService {
 
     public List<NewsResponse> getNews(Pageable pageable) {
 
-        saveNews(); // 추후 삭제
+        // saveNews(); // 추후 삭제
         Page<News> news = newsRepository.findAll(pageable);
 
         return news
@@ -56,9 +56,7 @@ public class NewsService {
 
     private void saveKeywordNews(String keyword) {
 
-        newsRepository.deleteAll(); // 추후 삭제
-
-        String apiURL = "https://openapi.naver.com/v1/search/news.json?query=" + keyword + "&sort=sim"; // 정확도순
+        String apiURL = "https://openapi.naver.com/v1/search/news.json?query=" + keyword + "&display=100&sort=sim"; // 정확도순
 
         RestTemplate restTemplate = new RestTemplate();
 
