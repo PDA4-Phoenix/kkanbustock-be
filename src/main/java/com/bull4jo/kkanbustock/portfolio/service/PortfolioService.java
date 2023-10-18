@@ -7,6 +7,7 @@ import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.portfolio.domain.Portfolio;
 import com.bull4jo.kkanbustock.portfolio.domain.PortfolioPK;
+import com.bull4jo.kkanbustock.portfolio.domain.PortfolioResponse;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
 import com.bull4jo.kkanbustock.stock.domain.Stock;
 import com.bull4jo.kkanbustock.stock.repository.StockRepository;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,18 +31,20 @@ public class PortfolioService {
 
     // 포트폴리오 단일 조회
     @Transactional(readOnly = true)
-    public Portfolio findByMemberIdAndStockId(final PortfolioPK portfolioPK) {
-        return portfolioRepository
+    public PortfolioResponse findByMemberIdAndStockId(final String memberId, final String stockId) {
+        PortfolioPK portfolioPK = new PortfolioPK(memberId, stockId);
+        return new PortfolioResponse(portfolioRepository
                 .findById(portfolioPK)
-                .orElseThrow(() -> new CustomException(ErrorCode.PORTFOLIO_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.PORTFOLIO_NOT_FOUND)));
     }
 
     // 포트폴리오 전체조회 (멤버 id로)
     @Transactional(readOnly = true)
-    public List<Portfolio> findByMemberId(final String memberId) {
-        return portfolioRepository
-                .findPortfoliosByMemberId(memberId)
+    public List<PortfolioResponse> findByMemberId(final String memberId) {
+        List<Portfolio> portfolios = portfolioRepository
+                .findByMemberId(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PORTFOLIO_NOT_FOUND));
+        return portfolios.stream().map(PortfolioResponse::new).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -83,7 +87,7 @@ public class PortfolioService {
 
         Stock stock = stockRepository
                 .findById(stockId)
-                .orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_COUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
 
         Portfolio portfolio = Portfolio.builder()
                 .portfolioPK(

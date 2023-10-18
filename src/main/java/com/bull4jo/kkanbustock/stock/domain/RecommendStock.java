@@ -10,14 +10,14 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-@Getter
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Stock {
+public class RecommendStock {
     /**
-     * 종목 코드보다 짧으면서 유일성이 보장되는 코드(6자리)
-     * */
+     * 종목 코드
+     */
     @Id
     private String srtnCd;
 
@@ -28,29 +28,16 @@ public class Stock {
     private String itmsNm;
 
     /**
-     * 주식의 시장 구분 (KOSPI/KOSDAQ/KONEX 중 1)
-     * */
-    @Column
-    private MarketType mrktCtg;
-
-    /**
      * 정규시장의 매매시간 종료시까지 형성되는 최종가격
      */
     @Column
     private int clpr;
 
     /**
-     * 정규시장의 매매시간
-     * 개시 후 형성되는 최초가격
+     * 종목 개요
      */
     @Column
-    private int mkp;
-
-    /**
-     * 기준 일자
-     */
-    @Column
-    private int basDt;
+    private String content;
 
     /**
      * 전일대비 등락
@@ -58,14 +45,5 @@ public class Stock {
     @Column
     private int vs;
 
-    /**
-     * 시가총액
-     */
-    @Column
-    private long mrktTotAmt;
 
-    public void update(int clpr, int mkp) {
-        this.clpr = clpr;
-        this.mkp = mkp;
-    }
 }

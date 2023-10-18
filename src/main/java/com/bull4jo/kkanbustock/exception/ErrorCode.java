@@ -37,6 +37,7 @@ public enum ErrorCode {
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "깐부 정보를 찾을 수 없습니다."),
 
     MY_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "내 깐부 정보를 찾을 수 없습니다"),
+
     TOP_GROUP_NOT_FOUND(HttpStatus.NOT_FOUND,"그룹을 찾을 수 없습니다."),
 
     GROUP_APPLICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "받은 깐부 신청을 찾을 수 없습니다."),
@@ -47,7 +48,13 @@ public enum ErrorCode {
 
     PORTFOLIO_NOT_FOUND(HttpStatus.NOT_FOUND, "포트폴리오를 찾을 수 없습니다."),
 
-    STOCK_NOT_COUND(HttpStatus.NOT_FOUND, "주식 정보를 찾을 수 없습니다."),
+    STOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "주식 정보를 찾을 수 없습니다."),
+
+    RECOMMENDED_STOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "추천 종목을 찾을 수 없습니다."),
+
+    NEWS_NOT_FOUND(HttpStatus.NOT_FOUND, "사전을 찾을 수 없습니다."),
+
+    DICTIONARY_NOT_FOUND(HttpStatus.NOT_FOUND, "사전을 찾을 수 없습니다."),
 
     /*
      * 405 METHOD_NOT_ALLOWED: 허용되지 않은 Request Method 호출
@@ -58,11 +65,6 @@ public enum ErrorCode {
      * 500 INTERNAL_SERVER_ERROR: 내부 서버 오류
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류입니다."),
-
-    /*
-     * 404 NOT_FOUND: 리소스를 찾을 수 없음
-     */
-    DICTIONARY_NOT_FOUND(HttpStatus.NOT_FOUND, "사전을 찾을 수 없습니다.")
 
     ;
 

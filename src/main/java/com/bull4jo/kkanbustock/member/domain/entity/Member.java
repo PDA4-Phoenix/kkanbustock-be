@@ -4,6 +4,7 @@ import com.bull4jo.kkanbustock.group.domain.entity.GroupApplication;
 import com.bull4jo.kkanbustock.group.domain.entity.KkanbuGroup;
 import com.bull4jo.kkanbustock.portfolio.domain.Portfolio;
 import com.bull4jo.kkanbustock.quiz.domain.entity.SolvedStockQuiz;
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -108,6 +109,10 @@ public class Member {
     }
 
     public void setDailyQuizSolved(boolean dailyQuizSolved) {
-        isDailyQuizSolved = dailyQuizSolved;
+        this.isDailyQuizSolved = dailyQuizSolved;
+    }
+
+    public void setInvestorType(InvestorType investorType) {
+        this.investorType = investorType;
     }
 }

@@ -17,18 +17,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/test")
+@RequestMapping("/api/v1")
 public class LoginController {
 
     private final MemberService memberService;
@@ -53,16 +51,16 @@ public class LoginController {
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
-        String id = authenticationRequest.getId();
-        Member foundUser = memberService.findUser(id);
+        String email = authenticationRequest.getEmail();
+        Member foundUser = memberService.findUser(email);
 
         if (!passwordEncoder.matches(authenticationRequest.getPassword(), foundUser.getPassword())) {
             return ResponseEntity.ok("Password invalid");
         }
 
-        final UserDetails userDetails = userDetailService.loadUserByUsername(id);
+        final UserDetails userDetails = userDetailService.loadUserByUsername(email);
         final String token = jwtTokenProvider.createToken(userDetails.getUsername(), foundUser.getRoles());
-        final Member member = userDetailService.getUsers(id);
+        final Member member = userDetailService.getUsers(email);
 
         return ResponseEntity.ok(
                 new AuthenticationResponse(
