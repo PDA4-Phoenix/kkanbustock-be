@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class Member {
 
     @Id
-    private String id;  //account
+    private String id;  // account
 
     @Column
     private String password;
