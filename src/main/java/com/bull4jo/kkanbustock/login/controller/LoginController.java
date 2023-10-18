@@ -26,7 +26,7 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/test")
+@RequestMapping("/api/v1")
 public class LoginController {
 
     private final MemberService memberService;

@@ -21,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 무조건 open 되는 endpoint
     private static final String[] PUBLIC_URI = {
-            "/api/test/**"
+            "/api/v1/**"
     };
 
     private static final String[] ADMIN_URI = {
@@ -56,7 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() // 세션 사용 X
                 .authorizeRequests() // 요청에 대한 사용 권한 체크
-                .antMatchers("/api/test/**").hasRole("USER")
+                .antMatchers("/api/v1/**").hasRole("USER")
                 .antMatchers(ADMIN_URI).hasRole("ADMIN")
                 .antMatchers(USER_URI).hasRole("USER")
                 .antMatchers(HttpMethod.POST).authenticated().and()
