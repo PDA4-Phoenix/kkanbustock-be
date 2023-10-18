@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@CrossOrigin
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -31,6 +32,12 @@ public class GroupController {
     public ResponseEntity<List<GroupResponse>> getMyGroups(@PathVariable String memberId) {
         return ResponseEntity
                 .ok(groupService.getMyGroups(memberId));
+    }
+
+    @GetMapping("/v1/groups/portfolios")
+    public ResponseEntity<KkanbuGroupResponse> getPortfoliosByKkanbuGroupPk(@RequestParam String hostId, @RequestParam String guestId) {
+        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
+        return ResponseEntity.ok(groupService.getPortfoliosByKkanbuGroupPk(kkanbuGroupPK));
     }
 
     @GetMapping("/v1/groups")

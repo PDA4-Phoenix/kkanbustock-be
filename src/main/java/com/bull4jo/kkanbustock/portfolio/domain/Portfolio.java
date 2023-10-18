@@ -84,4 +84,8 @@ public class Portfolio {
         this.quantity = quantity;
         this.setDerivedAttributes();
     }
+
+    public PortfolioResponse to(Portfolio portfolio) {
+        return new PortfolioResponse(portfolio);
+    }
 }

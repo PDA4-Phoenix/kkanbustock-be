@@ -5,6 +5,7 @@ import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.login.controller.request.MemberRegisterRequest;
 import com.bull4jo.kkanbustock.exception.CustomException;
 import com.bull4jo.kkanbustock.exception.ErrorCode;
+import com.bull4jo.kkanbustock.member.domain.entity.InvestorType;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
@@ -28,6 +29,12 @@ public class MemberService {
     private final PortfolioService portfolioService;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
+    public String saveInvestorType(final String memberId, final InvestorType investorType) {
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        member.setInvestorType(investorType);
+        return memberId;
+    }
 
     @Transactional
     public Map<String, Object> create(MemberRegisterRequest request) {
