@@ -33,6 +33,12 @@ public class GroupController {
                 .ok(groupService.getMyGroups(memberId));
     }
 
+    @GetMapping("/v1/groups/portfolios")
+    public ResponseEntity<KkanbuGroupResponse> getPortfoliosByKkanbuGroupPk(@RequestParam String hostId, @RequestParam String guestId) {
+        KkanbuGroupPK kkanbuGroupPK = new KkanbuGroupPK(hostId, guestId);
+        return ResponseEntity.ok(groupService.getPortfoliosByKkanbuGroupPk(kkanbuGroupPK));
+    }
+
     @GetMapping("/v1/groups")
     public ResponseEntity<List<GroupResponse>> getGroups() {
         return ResponseEntity
