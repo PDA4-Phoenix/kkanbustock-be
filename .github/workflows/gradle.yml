@@ -1,22 +1,17 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+name: Backend CI / CD
 
-name: Java CI with Gradle
-
+# master 브랜치에 push 되면 workflow 작동
 on:
   push:
-    branches: [ "api/deploy", "main" ]
+    branches:
+      - "main"
 
+# workflow 내에서 사용할 변수 값 저장
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY_NAME: "team-4"
   ENV_NAME: "prod"
   APP: "686710509719.dkr.ecr.ap-northeast-2.amazonaws.com/team-4"
-
 
 jobs:
   deploy:
@@ -71,7 +66,7 @@ jobs:
           ref: main  # branch 이름
           # 내 repository에 push 하기 위한 Personal Access Token이 필요
           token: ${{ secrets.ACTION_TOKEN }} # Github Action token을 발급받아서 repo secrect에 등록해줘야한다
-          path: kkanbustock-cicd # 최상위 경로로 repository와 동일하게 설정
+          path: cicd # 최상위 경로로 repository와 동일하게 설정
 
       # 새 이미지 버전으로 파일의 태그값 수정
       # cd path 수정
@@ -79,13 +74,13 @@ jobs:
       - name: Update Kubernetes resources
         run: |
           pwd 
-          cd kkanbustock-cicd/overlays/${{ env.ENV_NAME }}/server 
+          cd cicd/overlays/${{ env.ENV_NAME }}/ 
           kustomize edit set image ${{ env.APP }}:main-${{ github.sha }}
 
       # 수정된 kustomization.yaml 파일 commit push
       - name: Commit minifest files
         run: |
-          cd kkanbustock-cicd
+          cd cicd
           git config --global user.email "goldencorn7@naver.com"
           git config --global user.name "ghdeo"
           git commit -am "Update image"
