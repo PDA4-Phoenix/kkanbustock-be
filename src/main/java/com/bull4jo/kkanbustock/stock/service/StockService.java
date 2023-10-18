@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 // 주식 넣고, 빼고, 업데이트, 가져오고, 있는지 확인하고
 @Service
@@ -75,7 +76,10 @@ public class StockService {
     @Scheduled(cron = "0 0 2 * * *")
     @Transactional
     public void setStockRepository() {
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        OkHttpClient client = new OkHttpClient()
+                .newBuilder()
+                .readTimeout(10000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
         // 메서드 실행 시작 로그
@@ -162,7 +166,10 @@ public class StockService {
     }
 
     private Optional<Stock> getFromDartByStrnCd(final String srtnCd) {
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        OkHttpClient client = new OkHttpClient()
+                .newBuilder()
+                .readTimeout(10000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
         urlBuilder.addQueryParameter("serviceKey", authKey);
@@ -203,7 +210,10 @@ public class StockService {
     }
 
     private Optional<Stock> getFromDartByItmsNm(final String itmsNm) {
-        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        OkHttpClient client = new OkHttpClient()
+                .newBuilder()
+                .readTimeout(10000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
         urlBuilder.addQueryParameter("serviceKey", authKey);
