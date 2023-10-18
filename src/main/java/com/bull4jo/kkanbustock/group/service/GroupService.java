@@ -11,6 +11,7 @@ import com.bull4jo.kkanbustock.group.repository.GroupApplicationRepository;
 import com.bull4jo.kkanbustock.group.repository.GroupRepository;
 import com.bull4jo.kkanbustock.member.domain.entity.Member;
 import com.bull4jo.kkanbustock.member.repository.MemberRepository;
+import com.bull4jo.kkanbustock.portfolio.domain.Portfolio;
 import com.bull4jo.kkanbustock.portfolio.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -174,6 +175,18 @@ public class GroupService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CANT_CALCULATE_TOTAL_PURCHASE_AMOUNT));
 
         return ((hostTotalEquities + guestTotalEquities) / (hostTotalPurchaseAmount + guestTotalPurchaseAmount) - 1) * 100;
+    }
+
+    @Transactional(readOnly = true)
+    public KkanbuGroupResponse getPortfoliosByKkanbuGroupPk(final KkanbuGroupPK kkanbuGroupPK) {
+        List<Portfolio> hostPortfolio = portfolioRepository
+                .findByMemberId(kkanbuGroupPK.getHostId())
+                .orElseThrow(() -> new CustomException(ErrorCode.PORTFOLIO_NOT_FOUND));
+        List<Portfolio> guestPortfolio = portfolioRepository
+                .findByMemberId(kkanbuGroupPK.getGuestId())
+                .orElseThrow(() -> new CustomException(ErrorCode.PORTFOLIO_NOT_FOUND));
+
+        return new KkanbuGroupResponse(hostPortfolio, guestPortfolio);
     }
 
     private boolean isDuplicateGroupPK(KkanbuGroupPK kkanbuGroupPK) {
