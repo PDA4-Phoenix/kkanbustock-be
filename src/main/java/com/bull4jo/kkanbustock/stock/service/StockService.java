@@ -1,7 +1,8 @@
 package com.bull4jo.kkanbustock.stock.service;
 
-import com.bull4jo.kkanbustock.common.ParseStockJsonResponse;
+import com.bull4jo.kkanbustock.common.CustomParser;
 import com.bull4jo.kkanbustock.common.RandomNumberGenerator;
+import com.bull4jo.kkanbustock.common.RecentWeekdayFinder;
 import com.bull4jo.kkanbustock.exception.CustomException;
 import com.bull4jo.kkanbustock.exception.ErrorCode;
 import com.bull4jo.kkanbustock.member.domain.entity.InvestorType;
@@ -30,7 +31,7 @@ public class StockService {
     private final StockRepository stockRepository;
     private final RecommendStockRepository recommendStockRepository;
     private final String dartUrl = "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo";
-    private final String authKey = "IDHVrjX6z8KgvQCdBokJywDgdQjpPnlGVoqDPNmuz5RcZthIW+GAQmSYfzT/n+Um2jMkMly1jI2eEJWKqO4C0g==";
+    private final String authKey = "GYfL+RKMgNsn5M9GGWuVBwTIKQIPk0DdvBEFWfll2LmhKvI7QN6eUcvkX5x1bUd3RIzIl4HlsMEGfs/JxQOubA==";
 
     private final String shinhanUrl = "https://gapi.shinhansec.com:8443/openapi/v1.0/recommend/portfolio";
     private final String apiKey = "l7xxR7Fe0dP3i8KPZaPKpknI2vWrMeJfwDpk";
@@ -74,11 +75,10 @@ public class StockService {
     }
 
     @Scheduled(cron = "0 0 2 * * *")
-    @Transactional
     public void setStockRepository() {
         OkHttpClient client = new OkHttpClient()
                 .newBuilder()
-                .readTimeout(30000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .readTimeout(1000000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
                 .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
@@ -87,9 +87,11 @@ public class StockService {
 
         urlBuilder.addQueryParameter("serviceKey", authKey);
         urlBuilder.addQueryParameter("resultType", "json");
-        urlBuilder.addQueryParameter("numOfRows", "2420021");
+        urlBuilder.addQueryParameter("numOfRows", "3000");
+        urlBuilder.addQueryParameter("basDt", RecentWeekdayFinder.findMostRecentWeekday());
 
         String urlWithParam = urlBuilder.build().toString();
+        System.out.println("urlWithParam = " + urlWithParam);
         Request request = new Request.Builder()
                 .url(urlWithParam)
                 .method("GET", null)
@@ -104,7 +106,7 @@ public class StockService {
             if (response.isSuccessful()) {
                 // 응답 처리 로직
                 String responseBody = response.body().string();
-                List<Stock> stocks = ParseStockJsonResponse.parseResponses(responseBody);
+                List<Stock> stocks = CustomParser.parseJsonResponses(responseBody);
                 stockRepository.saveAll(stocks);
             } else {
                 // 응답이 실패인 경우
@@ -170,7 +172,7 @@ public class StockService {
                 // 응답 처리 로직
                 String responseBody = response.body().string();
 //                System.out.println("API 응답: " + responseBody);
-                stock = ParseStockJsonResponse.parseSingleResponse(responseBody);
+                stock = CustomParser.parseSingleJsonResponse(responseBody);
             } else {
                 // 응답이 실패인 경우
                 throw new RuntimeException("API 요청 실패. 응답 코드: " + response.code());
@@ -213,7 +215,7 @@ public class StockService {
             if (response.isSuccessful()) {
                 // 응답 처리 로직
                 String responseBody = response.body().string();
-                stock = ParseStockJsonResponse.parseSingleResponse(responseBody);
+                stock = CustomParser.parseSingleJsonResponse(responseBody);
             } else {
                 // 응답이 실패인 경우
                 throw new RuntimeException("API 요청 실패. 응답 코드: " + response.code());
