@@ -78,6 +78,12 @@ public class Stock {
     @Column
     private long mrktTotAmt;
 
+    public Stock(RecommendStock recommendStock) {
+        this.srtnCd = recommendStock.getSrtnCd();
+        this.itmsNm = recommendStock.getItmsNm();
+        this.clpr = recommendStock.getClpr();
+    }
+
     public void update(int clpr, int mkp) {
         this.clpr = clpr;
         this.mkp = mkp;
