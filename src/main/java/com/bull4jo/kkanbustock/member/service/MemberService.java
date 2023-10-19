@@ -42,7 +42,7 @@ public class MemberService {
         Map<String, Object> resultMap = new HashMap<>();
 
         // 아이디가 중복되었을 때
-        if (memberRepository.findById(request.getAccount()).isPresent()) {
+        if (memberRepository.findById(request.getId()).isPresent()) {
             resultMap.put("success", false);
             resultMap.put("message", "중복된 아이디 입니다.");
             return resultMap;
@@ -52,11 +52,11 @@ public class MemberService {
 
         Member newMember =
                 Member.builder()
-                        .id(request.getAccount())
+                        .id(request.getId())
                         .password(encodedPassword)
                         .name(request.getName())
                         .email(request.getEmail())
-                        .roles(Collections.singletonList("ROLE_USER"))
+                        .roles(Collections.singletonList("USER"))
                         .build();
 
         try {

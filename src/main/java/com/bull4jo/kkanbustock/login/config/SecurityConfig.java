@@ -47,19 +47,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
     /* 맨 아래 configure를 하기 전에 먼저 실행되는 함수 */
     /* PUBLIC_URI에 모든 접근을 허용하기 위해 검증을 ignoring */
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().mvcMatchers(PUBLIC_URI);
+        web.ignoring().antMatchers(PUBLIC_URI);
     }
+
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and() // 세션 사용 X
-                .authorizeRequests()
-                .antMatchers("/api/v1/**").hasRole("USER")
+        http.csrf().disable()
+                .authorizeRequests() // 요청에 대한 사용 권한 체크
+                .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight Request 허용해주기
+                .antMatchers("/api/v1/user/**").hasRole("USER")
                 .antMatchers(ADMIN_URI).hasRole("ADMIN")
                 .antMatchers(USER_URI).hasRole("USER")
                 .antMatchers(HttpMethod.POST).authenticated().and()
