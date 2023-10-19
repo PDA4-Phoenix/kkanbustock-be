@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-@CrossOrigin
+@CrossOrigin("https://team-4.shinhansec-pda.net/")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
