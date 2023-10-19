@@ -8,17 +8,18 @@ import javax.validation.constraints.NotNull;
 @Getter
 public class MemberRegisterRequest {
 
-    @NotNull
-    private String account;   // 로그인 할 때 쓰는 아이디
+    private String id;   // 로그인 할 때 쓰는 아이디
 
-    @NotNull
     private String password;
 
     private String email;
     private String name;
 
+
+
+
     public MemberRegisterDTO toServiceDto(){
-        return MemberRegisterDTO.of(account, password, email, name);
+        return MemberRegisterDTO.of(id, password, name, email);
     }
 
 }

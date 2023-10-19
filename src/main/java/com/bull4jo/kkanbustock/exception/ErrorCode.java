@@ -52,9 +52,11 @@ public enum ErrorCode {
 
     RECOMMENDED_STOCK_NOT_FOUND(HttpStatus.NOT_FOUND, "추천 종목을 찾을 수 없습니다."),
 
-    NEWS_NOT_FOUND(HttpStatus.NOT_FOUND, "사전을 찾을 수 없습니다."),
+    NEWS_NOT_FOUND(HttpStatus.NOT_FOUND, "뉴스를 찾을 수 없습니다."),
 
     DICTIONARY_NOT_FOUND(HttpStatus.NOT_FOUND, "사전을 찾을 수 없습니다."),
+
+
 
     /*
      * 405 METHOD_NOT_ALLOWED: 허용되지 않은 Request Method 호출
