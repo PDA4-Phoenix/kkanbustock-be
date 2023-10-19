@@ -40,6 +40,8 @@ public class StockController {
 
     @GetMapping("/v1/init-recommend-stocks")
     public void setInitRecommendStock() {
-        stockService.setRecommendStockRepository();
+        stockService.setRecommendModerateStock();
+        stockService.setRecommendConservativeStock();
+        stockService.setRecommendAggressiveStocks();
     }
 }
