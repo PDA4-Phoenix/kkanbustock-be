@@ -1,21 +1,96 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-
-name: Java CI with Gradle
-
+name: Backend CI / CD
+# master 브랜치에 push 되면 workflow 작동
 on:
   push:
-    branches: [ "api/deploy", "main" ]
-
-permissions:
-  contents: read
+    branches:
+      - "main"
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPOSITORY_NAME: "team-4"
+  ENV_NAME: "prod"
+  APP: "686710509719.dkr.ecr.ap-northeast-2.amazonaws.com/team-4"
 
 jobs:
-  # Spring Boot 애플리케이션을 빌드하여 도커허브에 푸시하는 과정
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # 1. Java 17 세팅
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      # Github Secret과 local env 에 저장된 값 불러오기
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      # access key와 secret를 사용하여 ECR에 push할 수 있도록 인증
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Dockerfile 을 기준으로 이미지 빌드 후 ecr로 push
+      - name: Set up Docker Buildx
+        id: docker_build
+        uses: docker/setup-buildx-action@v2
+
+      - name: main Environment Docker build & Push Docker image to Amazon ECR
+        uses: docker/build-push-action@v2
+        if: contains(github.ref, 'main')
+        env:
+          ECR: ${{ steps.login-ecr.outputs.registry }}
+          TAG: ${{ github.sha }}
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{env.ECR}}/${{env.ECR_REPOSITORY_NAME}}:back-${{env.TAG}}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            ENV=main
+
+      - name: Checkout for Kustomize repository
+        uses: actions/checkout@v2
+        with:
+          # kubernetes yaml 파일 저장
+          repository: PDA4-Phoenix/kkanbustock-server-cicd # k8s yaml 파일이 있는 repo
+          ref: main  # branch 이름
+          # 내 repository에 push 하기 위한 Personal Access Token이 필요
+          token: ${{ secrets.ACTION_TOKEN }} # Github Action token을 발급받아서 repo secrect에 등록해줘야한다
+          path: kkanbustock-server-cicd # 최상위 경로로 repository와 동일하게 설정
+
+      # 새 이미지 버전으로 파일의 태그값 수정.
+      # cd path 수정
+      # kustomize 로 image tag 값 변경.
+      - name: Update Kubernetes resources
+        run: |
+          pwd 
+          cd kkanbustock-server-cicd/overlays/${{ env.ENV_NAME }}/ 
+          kustomize edit set image ${{ env.APP }}:back-${{ github.sha }}
+
+      # 수정된 kustomization.yaml 파일 commit push
+      - name: Commit minifest files
+        run: |
+          cd kkanbustock-server-cicd
+          git config --global user.email "goldencorn7@naver.com"
+          git config --global user.name "ghdeo"
+          git commit -am "Update image"
+          git push -u origin main
+
   build-docker-image:
     runs-on: ubuntu-latest
     steps:
@@ -65,7 +140,7 @@ jobs:
 
       # 3. 최신 이미지를 컨테이너화하여 실행시킵니다
       - name: docker run new container
-        run: sudo docker run --name kkanbustock --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/kkanbustock-v0
+        run: sudo docker run --name github-actions-demo --rm -d -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/kkanbustock-v0
 
       # 4. 미사용 이미지를 정리합니다
       - name: delete old docker image

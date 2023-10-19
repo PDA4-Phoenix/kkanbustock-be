@@ -9,6 +9,7 @@ public class GroupResponse {
     private final String name;
     private final String hostName;
     private final String guestName;
+    private final String guestId;
     private final float profitRate;
 
     @Builder
@@ -16,6 +17,7 @@ public class GroupResponse {
         this.name = kkanbuGroup.getName();
         this.hostName = kkanbuGroup.getHostName();
         this.guestName = kkanbuGroup.getGuestName();
+        this.guestId = kkanbuGroup.getGuest().getId();
         this.profitRate = kkanbuGroup.getProfitRate();
     }
 }
