@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 // 주식 넣고, 빼고, 업데이트, 가져오고, 있는지 확인하고
 @Service
@@ -297,6 +298,18 @@ public class StockService {
                 .stream()
                 .map(RecommendStockResponse::new)
                 .toList();
+
+        return new PageImpl<>(recommends, pageable, page.getTotalElements());
+    }
+
+    @Transactional
+    public Page<RecommendStockResponse> getRecommendStocksByInvestorType(InvestorType investorType, Pageable pageable) {
+        Page<RecommendStock> page = recommendStockRepository.findByInvestorType(investorType, pageable).orElseThrow(() -> new CustomException(ErrorCode.RECOMMENDED_STOCK_NOT_FOUND));
+        List<RecommendStockResponse> recommends = page
+                .getContent()
+                .stream()
+                .map(RecommendStockResponse::new)
+                .collect(Collectors.toList());
 
         return new PageImpl<>(recommends, pageable, page.getTotalElements());
     }
