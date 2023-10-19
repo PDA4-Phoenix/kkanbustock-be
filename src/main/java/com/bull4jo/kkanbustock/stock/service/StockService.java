@@ -1,6 +1,6 @@
 package com.bull4jo.kkanbustock.stock.service;
 
-import com.bull4jo.kkanbustock.common.ParseJsonResponse;
+import com.bull4jo.kkanbustock.common.ParseStockJsonResponse;
 import com.bull4jo.kkanbustock.common.RandomNumberGenerator;
 import com.bull4jo.kkanbustock.exception.CustomException;
 import com.bull4jo.kkanbustock.exception.ErrorCode;
@@ -19,7 +19,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +78,7 @@ public class StockService {
     public void setStockRepository() {
         OkHttpClient client = new OkHttpClient()
                 .newBuilder()
-                .readTimeout(10000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .readTimeout(30000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
                 .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
@@ -105,7 +104,7 @@ public class StockService {
             if (response.isSuccessful()) {
                 // 응답 처리 로직
                 String responseBody = response.body().string();
-                List<Stock> stocks = ParseJsonResponse.parseResponses(responseBody);
+                List<Stock> stocks = ParseStockJsonResponse.parseResponses(responseBody);
                 stockRepository.saveAll(stocks);
             } else {
                 // 응답이 실패인 경우
@@ -146,7 +145,7 @@ public class StockService {
     private Optional<Stock> getFromDartByStrnCd(final String srtnCd) {
         OkHttpClient client = new OkHttpClient()
                 .newBuilder()
-                .readTimeout(10000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .readTimeout(30000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
                 .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
@@ -171,7 +170,7 @@ public class StockService {
                 // 응답 처리 로직
                 String responseBody = response.body().string();
 //                System.out.println("API 응답: " + responseBody);
-                stock = ParseJsonResponse.parseSingleResponse(responseBody);
+                stock = ParseStockJsonResponse.parseSingleResponse(responseBody);
             } else {
                 // 응답이 실패인 경우
                 throw new RuntimeException("API 요청 실패. 응답 코드: " + response.code());
@@ -190,7 +189,7 @@ public class StockService {
     private Optional<Stock> getFromDartByItmsNm(final String itmsNm) {
         OkHttpClient client = new OkHttpClient()
                 .newBuilder()
-                .readTimeout(10000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .readTimeout(30000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
                 .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
@@ -214,7 +213,7 @@ public class StockService {
             if (response.isSuccessful()) {
                 // 응답 처리 로직
                 String responseBody = response.body().string();
-                stock = ParseJsonResponse.parseSingleResponse(responseBody);
+                stock = ParseStockJsonResponse.parseSingleResponse(responseBody);
             } else {
                 // 응답이 실패인 경우
                 throw new RuntimeException("API 요청 실패. 응답 코드: " + response.code());
@@ -286,6 +285,7 @@ public class StockService {
             recommendStockRepository.save(recommendStock);
         }
     }
+
     @Transactional
     public Page<RecommendStockResponse> getRecommendedStocks(Pageable pageable) {
         Page<RecommendStock> page = recommendStockRepository.findAll(pageable);

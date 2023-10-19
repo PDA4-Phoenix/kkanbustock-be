@@ -5,12 +5,11 @@ import com.bull4jo.kkanbustock.stock.domain.Stock;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParseJsonResponse {
+public class ParseStockJsonResponse {
 
     public static Stock parseSingleResponse(String jsonResponse) {
         // Parse the JSON response
@@ -26,9 +25,11 @@ public class ParseJsonResponse {
                 .mrktCtg(MarketType.valueOf(item.get("mrktCtg").getAsString()))
                 .clpr(item.get("clpr").getAsInt())
                 .mkp(item.get("mkp").getAsInt())
-                .vs(item.get("vs").getAsInt())
-                .mrktTotAmt(item.get("mrktTotAmt").getAsNumber().longValue())
                 .basDt(item.get("basDt").getAsInt())
+                .vs(item.get("vs").getAsInt())
+                .fltRt((item.get("fltRt")).getAsFloat())
+                .trPrc(item.get("trPrc").getAsLong())
+                .mrktTotAmt(item.get("mrktTotAmt").getAsNumber().longValue())
                 .build();
         return stock;
     }
@@ -52,13 +53,12 @@ public class ParseJsonResponse {
                     .mrktCtg(MarketType.valueOf(asJsonObject.get("mrktCtg").getAsString()))
                     .clpr(asJsonObject.get("clpr").getAsInt())
                     .mkp(asJsonObject.get("mkp").getAsInt())
-                    .vs(asJsonObject.get("vs").getAsInt())
-                    .mrktTotAmt(asJsonObject.get("mrktTotAmt").getAsNumber().longValue())
                     .basDt(asJsonObject.get("basDt").getAsInt())
+                    .vs(asJsonObject.get("vs").getAsInt())
+                    .fltRt(asJsonObject.get("fltRt").getAsFloat())
+                    .trPrc(asJsonObject.get("trPrc").getAsLong())
+                    .mrktTotAmt(asJsonObject.get("mrktTotAmt").getAsNumber().longValue())
                     .build();
-
-            list.add(stock);
-
         }
 
         return list;
