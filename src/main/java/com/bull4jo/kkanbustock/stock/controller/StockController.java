@@ -1,5 +1,6 @@
 package com.bull4jo.kkanbustock.stock.controller;
 
+import com.bull4jo.kkanbustock.member.domain.entity.InvestorType;
 import com.bull4jo.kkanbustock.stock.domain.RecommendStockResponse;
 import com.bull4jo.kkanbustock.stock.domain.Stock;
 import com.bull4jo.kkanbustock.stock.service.StockService;
@@ -28,11 +29,22 @@ public class StockController {
     }
 
     @GetMapping("/v1/recommends")
-    public ResponseEntity<Page<RecommendStockResponse>> getRecommendedStocks(@RequestParam(value = "page", defaultValue = "0") int page,
-                                     @RequestParam(value = "size", defaultValue = "15") int size) {
+    public ResponseEntity<Page<RecommendStockResponse>> getRecommendedStocks(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "15") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(stockService.getRecommendedStocks(pageable));
     }
+
+    @GetMapping("/v1/recommends/{investorType}")
+    public ResponseEntity<Page<RecommendStockResponse>> getRecommendStocksByInvestorType(
+            @PathVariable InvestorType investorType,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "15") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(stockService.getRecommendStocksByInvestorType(investorType, pageable));
+    }
+
     @GetMapping("/v1/init-stocks")
     public void setInitStock() {
         stockService.setStockRepository();
@@ -40,6 +52,8 @@ public class StockController {
 
     @GetMapping("/v1/init-recommend-stocks")
     public void setInitRecommendStock() {
-        stockService.setRecommendStockRepository();
+        stockService.setRecommendModerateStock();
+        stockService.setRecommendConservativeStock();
+        stockService.setRecommendAggressiveStocks();
     }
 }

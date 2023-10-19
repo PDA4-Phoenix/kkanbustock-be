@@ -53,16 +53,36 @@ public class Stock {
     private int basDt;
 
     /**
-     * 전일대비 등락
+     * 전일 대비 등락
      */
     @Column
     private int vs;
+
+    /**
+     * 전일 대비 등락에 따른 비율
+     */
+    @Column
+    private float fltRt;
+
+    /**
+     * 거래대금
+     * 거래건 별 체결가격 * 체결수량의 누적 합계
+     */
+    @Column
+    private long trPrc;
+
 
     /**
      * 시가총액
      */
     @Column
     private long mrktTotAmt;
+
+    public Stock(RecommendStock recommendStock) {
+        this.srtnCd = recommendStock.getSrtnCd();
+        this.itmsNm = recommendStock.getItmsNm();
+        this.clpr = recommendStock.getClpr();
+    }
 
     public void update(int clpr, int mkp) {
         this.clpr = clpr;

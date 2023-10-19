@@ -1,9 +1,11 @@
 package com.bull4jo.kkanbustock.stock.service;
 
-import com.bull4jo.kkanbustock.common.ParseJsonResponse;
+import com.bull4jo.kkanbustock.common.CustomParser;
 import com.bull4jo.kkanbustock.common.RandomNumberGenerator;
+import com.bull4jo.kkanbustock.common.RecentWeekdayFinder;
 import com.bull4jo.kkanbustock.exception.CustomException;
 import com.bull4jo.kkanbustock.exception.ErrorCode;
+import com.bull4jo.kkanbustock.member.domain.entity.InvestorType;
 import com.bull4jo.kkanbustock.stock.domain.RecommendStock;
 import com.bull4jo.kkanbustock.stock.domain.RecommendStockResponse;
 import com.bull4jo.kkanbustock.stock.domain.Stock;
@@ -18,10 +20,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 // 주식 넣고, 빼고, 업데이트, 가져오고, 있는지 확인하고
 @Service
@@ -30,7 +32,7 @@ public class StockService {
     private final StockRepository stockRepository;
     private final RecommendStockRepository recommendStockRepository;
     private final String dartUrl = "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo";
-    private final String authKey = "IDHVrjX6z8KgvQCdBokJywDgdQjpPnlGVoqDPNmuz5RcZthIW+GAQmSYfzT/n+Um2jMkMly1jI2eEJWKqO4C0g==";
+    private final String authKey = "GYfL+RKMgNsn5M9GGWuVBwTIKQIPk0DdvBEFWfll2LmhKvI7QN6eUcvkX5x1bUd3RIzIl4HlsMEGfs/JxQOubA==";
 
     private final String shinhanUrl = "https://gapi.shinhansec.com:8443/openapi/v1.0/recommend/portfolio";
     private final String apiKey = "l7xxR7Fe0dP3i8KPZaPKpknI2vWrMeJfwDpk";
@@ -74,11 +76,10 @@ public class StockService {
     }
 
     @Scheduled(cron = "0 0 2 * * *")
-    @Transactional
     public void setStockRepository() {
         OkHttpClient client = new OkHttpClient()
                 .newBuilder()
-                .readTimeout(10000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .readTimeout(1000000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
                 .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
@@ -87,9 +88,11 @@ public class StockService {
 
         urlBuilder.addQueryParameter("serviceKey", authKey);
         urlBuilder.addQueryParameter("resultType", "json");
-        urlBuilder.addQueryParameter("numOfRows", "2420021");
+        urlBuilder.addQueryParameter("numOfRows", "3000");
+        urlBuilder.addQueryParameter("basDt", RecentWeekdayFinder.findMostRecentWeekday());
 
         String urlWithParam = urlBuilder.build().toString();
+        System.out.println("urlWithParam = " + urlWithParam);
         Request request = new Request.Builder()
                 .url(urlWithParam)
                 .method("GET", null)
@@ -104,7 +107,7 @@ public class StockService {
             if (response.isSuccessful()) {
                 // 응답 처리 로직
                 String responseBody = response.body().string();
-                List<Stock> stocks = ParseJsonResponse.parseResponses(responseBody);
+                List<Stock> stocks = CustomParser.parseJsonResponses(responseBody);
                 stockRepository.saveAll(stocks);
             } else {
                 // 응답이 실패인 경우
@@ -118,29 +121,6 @@ public class StockService {
             // 예외 처리
             e.printStackTrace();
         }
-    }
-
-    @Transactional
-    public void setRecommendStockRepository() {
-        List<Stock> stocks = stockRepository
-                .findTopByMrktTotAmt()
-                .orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
-
-        List<RecommendStock> recommendStocks = new ArrayList<>();
-        for (Stock stock : stocks) {
-            int random = RandomNumberGenerator.random(0, comments.length - 1);
-
-            RecommendStock recommendStock = new RecommendStock(
-                    stock.getSrtnCd()
-                    , stock.getItmsNm()
-                    , stock.getClpr()
-                    , comments[random]
-                    , stock.getVs());
-
-            recommendStocks.add(recommendStock);
-        }
-
-        recommendStockRepository.saveAll(recommendStocks);
     }
 
     @Transactional
@@ -168,7 +148,7 @@ public class StockService {
     private Optional<Stock> getFromDartByStrnCd(final String srtnCd) {
         OkHttpClient client = new OkHttpClient()
                 .newBuilder()
-                .readTimeout(10000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .readTimeout(30000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
                 .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
@@ -193,7 +173,7 @@ public class StockService {
                 // 응답 처리 로직
                 String responseBody = response.body().string();
 //                System.out.println("API 응답: " + responseBody);
-                stock = ParseJsonResponse.parseSingleResponse(responseBody);
+                stock = CustomParser.parseSingleJsonResponse(responseBody);
             } else {
                 // 응답이 실패인 경우
                 throw new RuntimeException("API 요청 실패. 응답 코드: " + response.code());
@@ -212,7 +192,7 @@ public class StockService {
     private Optional<Stock> getFromDartByItmsNm(final String itmsNm) {
         OkHttpClient client = new OkHttpClient()
                 .newBuilder()
-                .readTimeout(10000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
+                .readTimeout(30000, TimeUnit.MILLISECONDS) // 10 초 타임아웃
                 .build();
         HttpUrl.Builder urlBuilder = HttpUrl.parse(dartUrl).newBuilder();
 
@@ -236,7 +216,7 @@ public class StockService {
             if (response.isSuccessful()) {
                 // 응답 처리 로직
                 String responseBody = response.body().string();
-                stock = ParseJsonResponse.parseSingleResponse(responseBody);
+                stock = CustomParser.parseSingleJsonResponse(responseBody);
             } else {
                 // 응답이 실패인 경우
                 throw new RuntimeException("API 요청 실패. 응답 코드: " + response.code());
@@ -252,6 +232,63 @@ public class StockService {
         return Optional.of(stock);
     }
 
+    @Scheduled(cron = "0 0 4 * * *")
+    @Transactional
+    public void setRecommendAggressiveStocks() {
+        List<Stock> stocks = stockRepository.findAggressiveStocks().orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
+
+        for (Stock stock : stocks) {
+            int random = RandomNumberGenerator.random(0, comments.length - 1);
+
+            RecommendStock recommendStock = new RecommendStock(
+                    stock.getSrtnCd()
+                    , stock.getItmsNm()
+                    , stock.getClpr()
+                    , comments[random]
+                    , stock.getVs()
+                    , InvestorType.AGGRESSIVE);
+            recommendStockRepository.save(recommendStock);
+        }
+    }
+
+    @Scheduled(cron = "0 0 4 * * *")
+    @Transactional
+    public void setRecommendModerateStock() {
+        List<Stock> stocks = stockRepository.findModerateStock().orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
+
+        for (Stock stock : stocks) {
+            int random = RandomNumberGenerator.random(0, comments.length - 1);
+
+            RecommendStock recommendStock = new RecommendStock(
+                    stock.getSrtnCd()
+                    , stock.getItmsNm()
+                    , stock.getClpr()
+                    , comments[random]
+                    , stock.getVs()
+                    , InvestorType.MODERATE);
+            recommendStockRepository.save(recommendStock);
+        }
+    }
+
+    @Scheduled(cron = "0 0 4 * * *")
+    @Transactional
+    public void setRecommendConservativeStock() {
+        List<Stock> stocks = stockRepository.findConservativeStock().orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
+
+        for (Stock stock : stocks) {
+            int random = RandomNumberGenerator.random(0, comments.length - 1);
+
+            RecommendStock recommendStock = new RecommendStock(
+                    stock.getSrtnCd()
+                    , stock.getItmsNm()
+                    , stock.getClpr()
+                    , comments[random]
+                    , stock.getVs()
+                    , InvestorType.CONSERVATIVE);
+            recommendStockRepository.save(recommendStock);
+        }
+    }
+
     @Transactional
     public Page<RecommendStockResponse> getRecommendedStocks(Pageable pageable) {
         Page<RecommendStock> page = recommendStockRepository.findAll(pageable);
@@ -261,6 +298,18 @@ public class StockService {
                 .stream()
                 .map(RecommendStockResponse::new)
                 .toList();
+
+        return new PageImpl<>(recommends, pageable, page.getTotalElements());
+    }
+
+    @Transactional
+    public Page<RecommendStockResponse> getRecommendStocksByInvestorType(InvestorType investorType, Pageable pageable) {
+        Page<RecommendStock> page = recommendStockRepository.findByInvestorType(investorType, pageable).orElseThrow(() -> new CustomException(ErrorCode.RECOMMENDED_STOCK_NOT_FOUND));
+        List<RecommendStockResponse> recommends = page
+                .getContent()
+                .stream()
+                .map(RecommendStockResponse::new)
+                .collect(Collectors.toList());
 
         return new PageImpl<>(recommends, pageable, page.getTotalElements());
     }
