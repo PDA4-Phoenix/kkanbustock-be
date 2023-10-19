@@ -1,5 +1,6 @@
 package com.bull4jo.kkanbustock.stock.domain;
 
+import com.bull4jo.kkanbustock.member.domain.entity.InvestorType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,5 +46,6 @@ public class RecommendStock {
     @Column
     private int vs;
 
-
+    @Column
+    private InvestorType investorType;
 }
