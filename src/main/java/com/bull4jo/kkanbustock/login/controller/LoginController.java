@@ -37,6 +37,12 @@ public class LoginController {
     @PostMapping("/register")
 //    @ApiOperation(value = "회원가입")
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody MemberRegisterRequest request) {
+
+        String id = request.getId();
+        System.out.println("id = " + id);
+        String name = request.getName();
+        System.out.println("name = " + name);
+
         Map<String, Object> result = this.memberService.create(request);
 
         if ((Boolean) result.get("success")) {
@@ -51,7 +57,7 @@ public class LoginController {
     public ResponseEntity<?> createAuthenticationToken(
             @RequestBody AuthenticationRequest authenticationRequest) throws Exception {
 
-        String email = authenticationRequest.getEmail();
+        String email = authenticationRequest.getId();
         Member foundUser = memberService.findUser(email);
 
         if (!passwordEncoder.matches(authenticationRequest.getPassword(), foundUser.getPassword())) {

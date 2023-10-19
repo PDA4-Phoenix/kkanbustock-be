@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -47,6 +48,7 @@ public class NewsService {
                 .collect(Collectors.toList());
     }
 
+    @Scheduled(cron = "0 0 0 * * ?")
     private void saveNews() { // 스케줄러로 매일 자정마다 알아서 실행되도록 설정
         List<String> keywords = Arrays.asList("주식", "특징주", "환율", "금리", "주가");
         for (String keyword : keywords) {
