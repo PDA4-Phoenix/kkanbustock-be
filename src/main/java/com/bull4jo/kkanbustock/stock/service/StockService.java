@@ -4,6 +4,7 @@ import com.bull4jo.kkanbustock.common.ParseJsonResponse;
 import com.bull4jo.kkanbustock.common.RandomNumberGenerator;
 import com.bull4jo.kkanbustock.exception.CustomException;
 import com.bull4jo.kkanbustock.exception.ErrorCode;
+import com.bull4jo.kkanbustock.member.domain.entity.InvestorType;
 import com.bull4jo.kkanbustock.stock.domain.RecommendStock;
 import com.bull4jo.kkanbustock.stock.domain.RecommendStockResponse;
 import com.bull4jo.kkanbustock.stock.domain.Stock;
@@ -121,29 +122,6 @@ public class StockService {
     }
 
     @Transactional
-    public void setRecommendStockRepository() {
-        List<Stock> stocks = stockRepository
-                .findTopByMrktTotAmt()
-                .orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
-
-        List<RecommendStock> recommendStocks = new ArrayList<>();
-        for (Stock stock : stocks) {
-            int random = RandomNumberGenerator.random(0, comments.length - 1);
-
-            RecommendStock recommendStock = new RecommendStock(
-                    stock.getSrtnCd()
-                    , stock.getItmsNm()
-                    , stock.getClpr()
-                    , comments[random]
-                    , stock.getVs());
-
-            recommendStocks.add(recommendStock);
-        }
-
-        recommendStockRepository.saveAll(recommendStocks);
-    }
-
-    @Transactional
     public Stock findByStrnCd(final String strnCd) {
         Optional<Stock> byItmsNm = stockRepository.findById(strnCd);
         if (byItmsNm.isEmpty()) {
@@ -252,6 +230,62 @@ public class StockService {
         return Optional.of(stock);
     }
 
+    @Scheduled(cron = "0 0 4 * * *")
+    @Transactional
+    public void setRecommendAggressiveStocks() {
+        List<Stock> stocks = stockRepository.findAggressiveStocks().orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
+
+        for (Stock stock : stocks) {
+            int random = RandomNumberGenerator.random(0, comments.length - 1);
+
+            RecommendStock recommendStock = new RecommendStock(
+                    stock.getSrtnCd()
+                    , stock.getItmsNm()
+                    , stock.getClpr()
+                    , comments[random]
+                    , stock.getVs()
+                    , InvestorType.AGGRESSIVE);
+            recommendStockRepository.save(recommendStock);
+        }
+    }
+
+    @Scheduled(cron = "0 0 4 * * *")
+    @Transactional
+    public void setRecommendModerateStock() {
+        List<Stock> stocks = stockRepository.findModerateStock().orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
+
+        for (Stock stock : stocks) {
+            int random = RandomNumberGenerator.random(0, comments.length - 1);
+
+            RecommendStock recommendStock = new RecommendStock(
+                    stock.getSrtnCd()
+                    , stock.getItmsNm()
+                    , stock.getClpr()
+                    , comments[random]
+                    , stock.getVs()
+                    , InvestorType.MODERATE);
+            recommendStockRepository.save(recommendStock);
+        }
+    }
+
+    @Scheduled(cron = "0 0 4 * * *")
+    @Transactional
+    public void setRecommendConservativeStock() {
+        List<Stock> stocks = stockRepository.findConservativeStock().orElseThrow(() -> new CustomException(ErrorCode.STOCK_NOT_FOUND));
+
+        for (Stock stock : stocks) {
+            int random = RandomNumberGenerator.random(0, comments.length - 1);
+
+            RecommendStock recommendStock = new RecommendStock(
+                    stock.getSrtnCd()
+                    , stock.getItmsNm()
+                    , stock.getClpr()
+                    , comments[random]
+                    , stock.getVs()
+                    , InvestorType.CONSERVATIVE);
+            recommendStockRepository.save(recommendStock);
+        }
+    }
     @Transactional
     public Page<RecommendStockResponse> getRecommendedStocks(Pageable pageable) {
         Page<RecommendStock> page = recommendStockRepository.findAll(pageable);
