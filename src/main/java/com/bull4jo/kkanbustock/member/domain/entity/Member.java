@@ -92,14 +92,6 @@ public class Member {
         this.receivedGroupApplications = receivedGroupApplications;
     }
 
-    @Scheduled (cron = "0 0 0 * * ?") // 매일 자정마다 실행
-    @Transactional
-    public void resetDailyQuizSolved() {
-        // 매일 자정마다 isDailyQuizSolved 변수를 false로 초기화
-        isDailyQuizSolved = false;
-        System.out.println("resetDailyQuizSolved() 메서드 실행");
-    }
-
     public void calculateTotalProfit() {
         float totalPurchaseAmount = 0;
         float totalEquitiesValue = 0;
