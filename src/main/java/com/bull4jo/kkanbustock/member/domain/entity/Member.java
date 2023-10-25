@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -91,10 +92,12 @@ public class Member {
         this.receivedGroupApplications = receivedGroupApplications;
     }
 
-    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정마다 실행
+    @Scheduled (cron = "0 0 0 * * ?") // 매일 자정마다 실행
+    @Transactional
     public void resetDailyQuizSolved() {
         // 매일 자정마다 isDailyQuizSolved 변수를 false로 초기화
         isDailyQuizSolved = false;
+        System.out.println("resetDailyQuizSolved() 메서드 실행");
     }
 
     public void calculateTotalProfit() {

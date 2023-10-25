@@ -30,7 +30,7 @@ public class StockService {
                 .getSrtnCd();
     }
 
-    @Scheduled(cron = "0 0 2 * * *")
+    @Scheduled(cron = "0 0 2 * * *", zone = "Asia/Seoul")
     @Transactional
     public void setInit() {
         OkHttpClient client = new OkHttpClient().newBuilder().build();

@@ -107,7 +107,7 @@ public class PortfolioService {
                 .getMemberId();
     }
 
-    @Scheduled(cron = "0 1 2 * * *")
+    @Scheduled(cron = "0 1 2 * * *", zone = "Asia/Seoul")
     public void updatePortfolio() {
         List<Portfolio> portfolios = portfolioRepository.findAll();
         for (Portfolio portfolio : portfolios) {

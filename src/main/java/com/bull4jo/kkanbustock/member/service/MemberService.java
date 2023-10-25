@@ -71,13 +71,28 @@ public class MemberService {
     }
 
 
+    @Scheduled (cron = "0 0 0 * * ?") // 매일 자정마다 실행
+    @Transactional
+    public void resetDailyQuizSolved() {
+        // 매일 자정마다 isDailyQuizSolved 변수를 false로 초기화
+        Iterable<Member> members = memberRepository.findAll();
+        for (Member member : members) {
+            member.setDailyQuizSolved(false);
+            memberRepository.save(member);
+        }
 
-    @Scheduled (cron = "0 2 2 * * *")
+        System.out.println("resetDailyQuizSolved() 메서드 실행");
+    }
+
+
+    @Scheduled (cron = "0 2 2 * * *", zone = "Asia/Seoul")
     @Transactional
     public void updateMemberProfitRate() {
         float totalPurchaseAmount = 0;
         float totalEquitiesValue = 0;
         List<Member> members = memberRepository.findAll();
+
+        System.out.println("updateMemberProfitRate() 메서드 실행");
 
         portfolioRepository.calculateTotalPurchaseAmountByMemberId(members.get(0).getId());
         portfolioRepository.calculateTotalEquitiesValueByMemberId(members.get(0).getId());

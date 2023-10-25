@@ -140,7 +140,7 @@ public class GroupService {
         }
     }
 
-    @Scheduled (cron = "0 3 2 * * *")
+    @Scheduled (cron = "0 3 2 * * *", zone = "Asia/Seoul")
     @Transactional
     public void updateGroupProfitRate() {
         List<KkanbuGroup> groups = groupRepository.findAll();
