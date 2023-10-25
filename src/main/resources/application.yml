@@ -21,6 +21,10 @@ spring:
 jwt:
   secret: icCfO69JA9szqMdptUvy8A71edtwzsnAwv6cQjtBE/kkHXhPnhokFYej6HGbtZFZ9GjIjzLLBM0jphmCJO04ArSaiigEZvGbjJBwLosImTSYBkddWn6XWalRkoWxGEeW61oz1Yts9HwXMJ3lTy5P2c+KEIL1GKy77CC8/ISVq9kv5d256qtDNTYj0A9+vjlHGpMoQgIhKGm5Sq11Sje+750hzVMkINLA5AJTiNOhj7JschPXgC7VPd8S6HRfa2Jn6PFtDQMEnW4IQ7+NwX6jSaGz2+qBFmyH5xQdAYkj13Rd3XmgQEahVXWTKPxDU78EpfRoNuE3F0og8sI3TFUkOQ==
 
+naver:
+  clientId: 08LXqjCFLUGS8u6rNCYA
+  clientSecret: px5zLhiNek
+
 logging:
   level:
     org.springframework.orm.jpa: DEBUG

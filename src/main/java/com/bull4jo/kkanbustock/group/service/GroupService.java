@@ -149,7 +149,7 @@ public class GroupService {
         }
 
         // 메서드 실행 시작 로그
-        System.out.println("updateGroupProfitRate() 메서드가 실행됩니다.");
+        System.out.println("updateGroupProfitRate() 메서드가 실행됩니다. ");
     }
 
     public float getGroupProfitRate(String hostId, String guestId) {
