@@ -71,6 +71,7 @@ public class QuizService {
 
     @Transactional
     public Long saveSolvedQuiz(SolvedQuizRequest solvedQuizRequest) {
+
         String memberId = solvedQuizRequest.getMemberId();
         Long stockQuizId = solvedQuizRequest.getStockQuizId();
         Boolean isCorrect = solvedQuizRequest.getIsCorrect();
